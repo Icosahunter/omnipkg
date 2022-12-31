@@ -1,0 +1,4 @@
+{
+    "name": "eopkg",
+    "search": ["eopkg sr {package}", "\\S*"]
+}
