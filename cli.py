@@ -12,6 +12,10 @@ def search(args):
     for line in omni.search(args.package):
         print(line)
 
+def installed(args):
+    for line in omni.installed():
+        print(line)
+
 def install(args):
     print(omni.install(args.package))
 
@@ -29,6 +33,9 @@ search_parser.set_defaults(func=install)
 search_parser = subparsers.add_parser('uninstall')
 search_parser.add_argument('package')
 search_parser.set_defaults(func=uninstall)
+
+search_parser = subparsers.add_parser('installed')
+search_parser.set_defaults(func=installed)
 
 args = parser.parse_args()
 args.func(args)

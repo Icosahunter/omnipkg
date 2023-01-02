@@ -1,6 +1,7 @@
 {
     "name": "eopkg",
-    "search": ["eopkg sr -N {package}", "\\S*"],
+    "search":["eopkg sr -N {package}", "\\S*"],
     "install": "eopkg it -y {package}",
-    "uninstall": "sudo eopkg rm {package}"
+    "uninstall": "eopkg rm {package}",
+    "installed": ["eopkg li", "\\S*"]
 }
