@@ -4,6 +4,8 @@
     "install": "eopkg it -y {package}",
     "uninstall": "eopkg rm {package}",
     "update": "eopkg up -y {package}",
+    "update-all": "eopkg up",
     "installed": ["eopkg li", "s/ .*//p"],
+    "updatable": ["eopkg lu", "s/ .*//p"],
     "info": ["eopkg info {package}", "p"]
 }
