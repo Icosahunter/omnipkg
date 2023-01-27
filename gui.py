@@ -12,29 +12,36 @@ class OmniWindow(Gtk.Window):
         self.gio_async = GioAsyncHandler()
         self.set_default_size(800, 500)
 
+        self.top_bar_box = Gtk.Box()
+
         self.search_box = Gtk.Box()
+        self.search_box.get_style_context().add_class("linked")
         self.search_entry = Gtk.Entry()
         self.search_entry.connect('activate', self.on_search_entry_activate)
+        self.search_term = ''
         self.search_button = Gtk.Button(label='Search')
         self.search_button.connect('clicked', self.on_search_button_click)
-        self.search_all_button = Gtk.RadioButton.new_with_label_from_widget(None, 'All')
-        self.search_updatable_button = Gtk.RadioButton.new_with_label_from_widget(self.search_all_button, 'Updatable')
-        self.search_installed_button = Gtk.RadioButton.new_with_label_from_widget(self.search_all_button, 'Installed')
-        self.search_update_all_button = Gtk.Button(label='Update All')
-        self.search_all_button.connect('toggled', self.on_search_radio_button_toggle, 'all')
-        self.search_updatable_button.connect('toggled', self.on_search_radio_button_toggle, 'updatable')
-        self.search_installed_button.connect('toggled', self.on_search_radio_button_toggle, 'installed')
-        self.search_mode = 'all'
-        self.search_term = ''
-        self.search_update_all_button.connect('clicked', self.on_update_all_button_click)
         self.search_box.pack_start(self.search_entry, False, True, 0)
         self.search_box.pack_start(self.search_button, False, True, 0)
         self.search_button.set_margin_end(10)
-        self.search_box.pack_start(self.search_all_button, False, True, 0)
-        self.search_box.pack_start(self.search_updatable_button, False, True, 0)
-        self.search_box.pack_start(self.search_installed_button, False, True, 0)
+
+        self.search_all_button = Gtk.RadioButton.new_with_label_from_widget(None, 'All')
+        self.search_all_button.connect('toggled', self.on_search_radio_button_toggle, 'all')
+        self.search_updatable_button = Gtk.RadioButton.new_with_label_from_widget(self.search_all_button, 'Updatable')
+        self.search_updatable_button.connect('toggled', self.on_search_radio_button_toggle, 'updatable')
+        self.search_installed_button = Gtk.RadioButton.new_with_label_from_widget(self.search_all_button, 'Installed')
+        self.search_installed_button.connect('toggled', self.on_search_radio_button_toggle, 'installed')
         self.search_installed_button.set_margin_end(10)
-        self.search_box.pack_start(self.search_update_all_button, False, True, 0)
+        self.search_mode = 'all'
+
+        self.search_update_all_button = Gtk.Button(label='Update All')
+        self.search_update_all_button.connect('clicked', self.on_update_all_button_click)
+
+        self.top_bar_box.pack_start(self.search_box, False, True, 0)
+        self.top_bar_box.pack_start(self.search_all_button, False, True, 0)
+        self.top_bar_box.pack_start(self.search_updatable_button, False, True, 0)
+        self.top_bar_box.pack_start(self.search_installed_button, False, True, 0)
+        self.top_bar_box.pack_start(self.search_update_all_button, False, True, 0)
 
         self.pkg_list_store = Gtk.ListStore(str, str)
         self.search_filter = self.pkg_list_store.filter_new()
@@ -81,17 +88,19 @@ class OmniWindow(Gtk.Window):
         self.paned.pack2(self.app_info_box)
 
         self.stat_bar_spinner = Gtk.Spinner()
+        self.stat_bar_label = Gtk.Label()
         self.stat_bar_box = Gtk.Box()
         self.stat_bar_box.set_margin_top(5)
         self.stat_bar_box.set_margin_bottom(5)
         self.stat_bar_box.set_margin_start(5)
         self.stat_bar_box.set_margin_end(5)
         self.stat_bar_box.pack_start(self.stat_bar_spinner, False, True, 0)
+        self.stat_bar_box.pack_start(self.stat_bar_label, False, True, 0)
 
         self.main_box_separator = Gtk.Separator()
         self.main_box_separator2 = Gtk.Separator()
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
-        self.main_box.pack_start(self.search_box, False, True, 0)
+        self.main_box.pack_start(self.top_bar_box, False, True, 0)
         self.main_box.pack_start(self.main_box_separator, False, True, 0)
         self.main_box.pack_start(self.paned, True, True, 0)
         self.main_box.pack_start(self.main_box_separator2, False, True, 0)
@@ -106,17 +115,20 @@ class OmniWindow(Gtk.Window):
 
     def on_packages_selection_change(self, selection):
         model, i = selection.get_selected()
-        package = model[i][0]
-        pm = model[i][1]
-        self.set_info_box(package, pm)
+        if model is not None and model[i] is not None:
+            package = model[i][0]
+            pm = model[i][1]
+            self.set_info_box(package, pm)
 
     def set_info_box(self, package, pm):
+        self.stat_bar_start_task('Getting package info...')
         self.gio_async.run_async(omni.info, [package, pm], self.set_info_box_callback)
         self.gio_async.run_async(omni.is_installed, [package, pm], self.set_install_button_callback)
         self.gio_async.run_async(omni.is_updatable, [package, pm], self.set_update_button_callback)
     
     def set_info_box_callback(self,result):
         self.app_info_label.set_text(result['result'])
+        self.stat_bar_end_task()
     
     def set_update_button_callback(self, result):
         if result:
@@ -158,23 +170,25 @@ class OmniWindow(Gtk.Window):
     def on_search_radio_button_toggle(self, button, name):
         if button.get_active():
             self.search_mode = name
-        self.update_list()
+            self.update_list()
 
     def update_list(self):
-        self.stat_bar_spinner.start()
         match self.search_mode:
             case 'all':
                 if self.search_term.isspace() or self.search_term == '':
                     self.pkg_list_store.clear()
                 else:
+                    self.stat_bar_start_task('Fetching packages matching search...')
                     self.gio_async.run_async(omni.search, [self.search_term], self.populate_list_callback)
             case 'updatable':
+                self.stat_bar_start_task('Fetching updatable packages matching search...')
                 self.gio_async.run_async(omni.updatable, [], self.populate_list_callback)
             case 'installed':
+                self.stat_bar_start_task('Fetching installed packages matching search...')
                 self.gio_async.run_async(omni.installed, [], self.populate_list_callback)
 
     def populate_list_callback(self, result):
-        self.stat_bar_spinner.stop()
+        self.stat_bar_end_task()
         self.populate_list(result)
         self.search_filter.refilter()
 
@@ -182,6 +196,14 @@ class OmniWindow(Gtk.Window):
         self.pkg_list_store.clear()
         for item in items:
             self.pkg_list_store.append([item['result'], item['pm']])
+    
+    def stat_bar_start_task(self, task_str):
+        self.stat_bar_spinner.start()
+        self.stat_bar_label.set_text(task_str)
+    
+    def stat_bar_end_task(self):
+        self.stat_bar_spinner.stop()
+        self.stat_bar_label.set_text('')
 
     def search_filter_func(self, model, iter, data):
         return self.search_mode == 'all' or self.search_term.isspace() or self.search_term in model[iter][0]
