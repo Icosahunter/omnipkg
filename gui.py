@@ -2,15 +2,16 @@ import common as omni
 import gi
 import asyncio
 gi.require_version('Gtk', '3.0')
-from gi.repository import Gtk, Gio, GObject
+from gi.repository import Gtk, Gio, GObject, Pango
 
 class OmniWindow(Gtk.Window):
 
     def __init__(self):
         super().__init__(title='OmniPkg')
 
+        self.pause_selection_updating = False
         self.gio_async = GioAsyncHandler()
-        self.set_default_size(800, 500)
+        self.set_default_size(1000, 700)
 
         self.top_bar_box = Gtk.Box()
 
@@ -43,7 +44,7 @@ class OmniWindow(Gtk.Window):
         self.top_bar_box.pack_start(self.search_installed_button, False, True, 0)
         self.top_bar_box.pack_start(self.search_update_all_button, False, True, 0)
 
-        self.pkg_list_store = Gtk.ListStore(str, str)
+        self.pkg_list_store = Gtk.ListStore(str, str, str, str)
         self.search_filter = self.pkg_list_store.filter_new()
         self.search_filter.set_visible_func(self.search_filter_func)
         self.pkg_list_view = Gtk.TreeView(model=self.search_filter)
@@ -54,12 +55,19 @@ class OmniWindow(Gtk.Window):
         self.pkg_list_scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
 
         self.pkg_name_renderer = Gtk.CellRendererText()
-        self.pkg_name_column = Gtk.TreeViewColumn('Package', self.pkg_name_renderer, text=0)
+        self.pkg_name_column = Gtk.TreeViewColumn('Package', self.pkg_name_renderer, text=2)
+        self.pkg_name_column.set_resizable(True)
         self.pkg_list_view.append_column(self.pkg_name_column)
 
         self.pkg_manager_renderer = Gtk.CellRendererText()
         self.pkg_manager_column = Gtk.TreeViewColumn('Package Manager', self.pkg_manager_renderer, text=1)
+        self.pkg_manager_column.set_resizable(True)
         self.pkg_list_view.append_column(self.pkg_manager_column)
+
+        self.pkg_summary_renderer = Gtk.CellRendererText()
+        self.pkg_summary_column = Gtk.TreeViewColumn('Summary', self.pkg_summary_renderer, text=3)
+        self.pkg_summary_column.set_resizable(True)
+        self.pkg_list_view.append_column(self.pkg_summary_column)
 
         self.app_install_button = Gtk.Button(label='Install')
         self.app_install_button.connect('clicked', self.on_install_button_click)
@@ -72,7 +80,9 @@ class OmniWindow(Gtk.Window):
         self.app_info_button_box.pack_end(self.app_install_button, False, True, 5)
         self.app_info_button_box.pack_end(self.app_uninstall_button, False, True, 5)
         self.app_info_button_box.pack_end(self.app_update_button, False, True, 5)
+        self.app_info_title = Gtk.Label()
         self.app_info_label = Gtk.Label()
+        self.app_info_label.set_line_wrap(True)
         self.app_info_label.set_halign(Gtk.Align.START)
         self.app_info_label.set_valign(Gtk.Align.START)
         self.app_info_label.set_margin_top(15)
@@ -82,10 +92,12 @@ class OmniWindow(Gtk.Window):
         self.app_scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.app_info_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
         self.app_info_box.pack_start(self.app_info_button_box, False, True, 0)
+        self.app_info_box.pack_start(self.app_info_title, False, True, 0)
         self.app_info_box.pack_start(self.app_scrolled_window, True, True, 0)
         self.paned = Gtk.Paned(orientation=Gtk.Orientation.HORIZONTAL)
-        self.paned.pack1(self.pkg_list_scrolled_window)
-        self.paned.pack2(self.app_info_box)
+        self.paned.pack1(self.pkg_list_scrolled_window, True, True)
+        self.paned.pack2(self.app_info_box, True, True)
+        self.paned.set_position(self.get_default_size().width//2)
 
         self.stat_bar_spinner = Gtk.Spinner()
         self.stat_bar_label = Gtk.Label()
@@ -115,10 +127,17 @@ class OmniWindow(Gtk.Window):
 
     def on_packages_selection_change(self, selection):
         model, i = selection.get_selected()
-        if model is not None and model[i] is not None:
+
+        if (not self.pause_selection_updating
+            and model is not None 
+            and i is not None
+            and model[i] is not None):
+
             package = model[i][0]
             pm = model[i][1]
             self.set_info_box(package, pm)
+        else:
+            self.clear_info()
 
     def set_info_box(self, package, pm):
         self.stat_bar_start_task('Getting package info...')
@@ -127,8 +146,22 @@ class OmniWindow(Gtk.Window):
         self.gio_async.run_async(omni.is_updatable, [package, pm], self.set_update_button_callback)
     
     def set_info_box_callback(self,result):
-        self.app_info_label.set_text(result['result'])
+        if len(result) > 0:
+            self.app_info_title.set_markup('<span font_weight="bold" size="large">' + result[0]['name'] + '</span>')
+            self.app_info_label.set_text(result[0]['info'])
+            self.stat_bar_end_task()
+        else:
+            self.app_info_title.set_text('')
+            self.app_info_label.set_text('')
+            self.stat_bar_end_task()
+    
+    def clear_info(self):
+        self.app_info_title.set_text('')
+        self.app_info_label.set_text('')
         self.stat_bar_end_task()
+        self.app_update_button.hide()
+        self.app_install_button.hide()
+        self.app_uninstall_button.hide()
     
     def set_update_button_callback(self, result):
         if result:
@@ -176,7 +209,7 @@ class OmniWindow(Gtk.Window):
         match self.search_mode:
             case 'all':
                 if self.search_term.isspace() or self.search_term == '':
-                    self.pkg_list_store.clear()
+                    self.clear_list()
                 else:
                     self.stat_bar_start_task('Fetching packages matching search...')
                     self.gio_async.run_async(omni.search, [self.search_term], self.populate_list_callback)
@@ -192,10 +225,15 @@ class OmniWindow(Gtk.Window):
         self.populate_list(result)
         self.search_filter.refilter()
 
-    def populate_list(self, items):
+    def clear_list(self):
+        self.pause_selection_updating = True
         self.pkg_list_store.clear()
+        self.pause_selection_updating = False
+
+    def populate_list(self, items):
+        self.clear_list()
         for item in items:
-            self.pkg_list_store.append([item['result'], item['pm']])
+            self.pkg_list_store.append([item['id'], item['pm'], item['name'], truncate_text(item['summary'], 40)])
     
     def stat_bar_start_task(self, task_str):
         self.stat_bar_spinner.start()
@@ -245,6 +283,12 @@ class GioAsyncWorker(GObject.Object):
     def _async_thread_func(self, task, source, data, cancellable):
         result = self.func(*self.args)
         task.return_value(result)
+
+def truncate_text(text, size):
+    if len(text) > size:
+        return text[0:size-3] + '...'
+    else:
+        return text
 
 win = OmniWindow()
 win.connect('destroy', Gtk.main_quit)

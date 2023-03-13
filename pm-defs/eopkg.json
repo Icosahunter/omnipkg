@@ -1,11 +1,11 @@
 {
     "name": "eopkg",
-    "search":["eopkg sr -N {package}", "s/ .*//p"],
+    "search":["eopkg sr -N {package}", "(?P<id>.+?)  +- (?P<summary>.+?)\n"],
     "install": "eopkg it -y {package}",
     "uninstall": "eopkg rm {package}",
     "update": "eopkg up -y {package}",
     "update-all": "eopkg up",
-    "installed": ["eopkg li", "s/ .*//p"],
-    "updatable": ["eopkg lu", "s/ .*//p"],
-    "info": ["eopkg info {package}", "p"]
+    "installed": ["eopkg li", "(?P<id>.+?)  +- (?P<summary>.+?)\n"],
+    "updatable": ["eopkg lu", "(?<!No packages to upgrade\\.)(?P<id>.+?)  +- (?P<summary>.+?)\n"],
+    "info": ["eopkg info {package}", "Name +: (?P<id>.+?),(.|\n)*Description +: (?P<info>(.|\n)+?)\n.*:"]
 }
