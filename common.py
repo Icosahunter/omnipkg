@@ -1,9 +1,20 @@
+import appdirs
+from pathlib import Path
 import subprocess
 import json
 import shlex
 import os
 import io
 import re
+
+app_name = 'omnipkg'
+app_author = 'Nathaniel Markham'
+user_data_dir = Path(appdirs.user_data_dir(app_name, app_author))
+user_config_dir = Path(appdirs.user_config_dir(app_name, app_author))
+user_data_dir.mkdir(exist_ok=True)
+user_config_dir.mkdir(exist_ok=True)
+pkg_cache_path = user_data_dir / 'pkg_cache.json'
+cache = None
 
 pkg_managers = []
 
@@ -83,10 +94,16 @@ def is_available(pkg_name, pm_name=None):
     return package in [pkg['id'] for pkg in search(pkg_name, pm_name)]
 
 def is_updatable(pkg_name, pm_name=None):
-    return pkg_name in [pkg['id'] for pkg in updatable(pm_name)]
+    if cache is not None:
+        return pkg_name in [pkg['id'] for pkg in cache['updatable']]
+    else:
+        return pkg_name in [pkg['id'] for pkg in updatable(pm_name)]
 
 def is_installed(pkg_name, pm_name=None):
-    return pkg_name in [pkg['id'] for pkg in installed(pm_name)]
+    if cache is not None:
+        return pkg_name in [pkg['id'] for pkg in cache['installed']]
+    else:
+        return pkg_name in [pkg['id'] for pkg in installed(pm_name)]
 
 def search(pkg_name, pm_name=None):
     if pm_name is not None:
@@ -135,3 +152,19 @@ def update_all(pkg_name, pm_name=None):
         return run('update-all', pm_name, pkg_name, run_privileged=True)
     else:
         return run_for_all_pms('update-all', pkg_name, run_privileged=True)
+
+def update_cache():
+    global cache
+    data = {
+        'installed' : installed(),
+        'updatable' : updatable()
+    }
+    cache = data
+    with open(pkg_cache_path, 'w+') as f:
+        f.write(json.dumps(data, indent=4))
+
+def load_cache():
+    global cache
+    if pkg_cache_path.exists():
+        with open(pkg_cache_path, 'r') as f:
+            cache = json.loads(f.read())

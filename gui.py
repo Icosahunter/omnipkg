@@ -11,6 +11,9 @@ class OmniWindow(Gtk.Window):
 
         self.pause_selection_updating = False
         self.gio_async = GioAsyncHandler()
+        omni.load_cache()
+        self.update_cache()
+
         self.set_default_size(1000, 700)
 
         self.top_bar_box = Gtk.Box()
@@ -119,6 +122,9 @@ class OmniWindow(Gtk.Window):
         self.main_box.pack_start(self.stat_bar_box, False, True, 0)
 
         self.add(self.main_box)
+    
+    def update_cache(self):
+        self.gio_async.run_async(omni.update_cache, [], None)
 
     def on_window_show(self):
         self.app_install_button.hide()
@@ -188,17 +194,21 @@ class OmniWindow(Gtk.Window):
     def on_install_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
         self.gio_async.run_async(omni.install, model[i], None)
+        self.update_cache()
     
     def on_uninstall_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
         self.gio_async.run_async(omni.uninstall, model[i], None)
+        self.update_cache()
     
     def on_update_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
         self.gio_async.run_async(omni.update, model[i], None)
+        self.update_cache()
     
     def on_update_all_button_click(self, button):
         self.gio_async.run_async(omni.update_all, None, None)
+        self.update_cache()
 
     def on_search_radio_button_toggle(self, button, name):
         if button.get_active():
@@ -261,7 +271,8 @@ class GioAsyncHandler(GObject.Object):
         res = None
         if Gio.Task.is_valid(result, source):
             res = result.propagate_value().value
-        source.callback(res)
+        if source.callback is not None:
+            source.callback(res)
         self.workers.remove(source)
 
 class GioAsyncWorker(GObject.Object):
