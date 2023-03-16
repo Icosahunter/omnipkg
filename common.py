@@ -1,5 +1,6 @@
 import appdirs
 from pathlib import Path
+import shutil
 import subprocess
 import json
 import shlex
@@ -13,14 +14,19 @@ user_data_dir = Path(appdirs.user_data_dir(app_name, app_author))
 user_config_dir = Path(appdirs.user_config_dir(app_name, app_author))
 user_data_dir.mkdir(exist_ok=True)
 user_config_dir.mkdir(exist_ok=True)
-pkg_cache_path = user_data_dir / 'pkg_cache.json'
+pm_defs_dir = user_config_dir / 'pm-defs/'
+pkg_cache_path = user_data_dir / 'pkg-cache.json'
 cache = None
 
 pkg_managers = []
 
-for path in os.listdir('./pm-defs'):
-    with open('./pm-defs/' + path) as f:
-        pkg_managers.append(json.load(f))
+pm_defs_dir.mkdir(exist_ok=True)
+
+for path in pm_defs_dir.glob('*'):
+    with open(path) as f:
+        pm_def = json.load(f)
+        if shutil.which(pm_def['name']):
+            pkg_managers.append(pm_def)
 
 def run(cmd_name, pm_name=None, pkg_name=None, capture_output=False, run_privileged=False):
     result = 0

@@ -193,17 +193,17 @@ class OmniWindow(Gtk.Window):
     
     def on_install_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
-        self.gio_async.run_async(omni.install, model[i], None)
+        self.gio_async.run_async(omni.install, model[i][0:1], None)
         self.update_cache()
     
     def on_uninstall_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
-        self.gio_async.run_async(omni.uninstall, model[i], None)
+        self.gio_async.run_async(omni.uninstall, model[i][0:1], None)
         self.update_cache()
     
     def on_update_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
-        self.gio_async.run_async(omni.update, model[i], None)
+        self.gio_async.run_async(omni.update, model[i][0:1], None)
         self.update_cache()
     
     def on_update_all_button_click(self, button):
