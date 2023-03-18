@@ -1,14 +1,11 @@
 [build-system]
-requires = ['setuptools', 'appdirs']
+requires = ['setuptools']
 build-backend = 'setuptools.build_meta'
 
 [project]
 name = 'omnipkg'
 version = '0.0.1'
 description = 'A simple GUI and command-line tool wrapper around many package managers.'
-dependencies = [
-
-]
 
 [project.scripts]
 omnipkg = 'omnipkg:cli.run'
