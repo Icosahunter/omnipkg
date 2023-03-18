@@ -1,12 +1,13 @@
-import sys
-import common as omni
-from cx_Freeze import setup, Executable
-
-base = 'Win32GUI' if sys.platform == 'win32' else None
+import appdirs
+from setuptools import setup
 
 setup(
-    name=omni.app_name,
-    version='0.1',
-    description='A simple GUI and command-line tool wrapper around many package managers.',
-    executables=[Executable('gui.py', base=base), Executable('common.py')]
+    data_files=[
+        (appdirs.user_config_dir('omnipkg', 'Nathaniel Markham'), 
+        [
+            'data/pm-defs/eopkg.json',
+            'data/pm-defs/flatpak.json',
+            'data/pm-defs/pacman.json'
+        ])
+    ]
 )

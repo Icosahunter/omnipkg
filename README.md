@@ -12,6 +12,12 @@ OmniPkg is still in development. It is not itself packaged for any distros and i
 OmniPkg is still in development, currently to use it you will simply:
  - Clone the repo
  - In a terminal navigate to the git repo folder
- - To use the gui execute gui.py with python ("python3 gui.py")
- - To use the cli execute cli.py with python or use the omni bash script with any cli sub-commands/arguments ("python3 cli.py" or "./omni")
- - For a list of cli commands use --help ("python3 cli.py --help" or "./omni --help")
+ - Build the package with "python3 -m build"
+ - Navigate to the new "dist" folder
+ - Install the .whl file with pip "pip3 install WHEEL_FILENAME_HERE.whl"
+ - To use the GUI app run "omnipkg-gui" in a terminal
+ - To use the CLI app run "omnipkg" in a terminal, get help on the commands with "omnipkg --help"
+
+ # Configuration
+ You can add or change the package definition JSON files.
+ You can find these files in ~/.config/omnipkg/pm-defs after installation.

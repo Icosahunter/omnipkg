@@ -1,1 +1,4 @@
 __pycache__
+dist
+src/omnipkg.egg-info
+*.pyc

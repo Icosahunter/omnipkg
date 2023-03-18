@@ -1,4 +1,4 @@
-import common as omni
+import omnipkg.common as omni
 import gi
 import asyncio
 gi.require_version('Gtk', '3.0')
@@ -17,6 +17,10 @@ class OmniWindow(Gtk.Window):
         self.set_default_size(1000, 700)
 
         self.top_bar_box = Gtk.Box()
+        self.top_bar_box.set_margin_top(10)
+        self.top_bar_box.set_margin_bottom(10)
+        self.top_bar_box.set_margin_start(10)
+        self.top_bar_box.set_margin_end(10)
 
         self.search_box = Gtk.Box()
         self.search_box.get_style_context().add_class("linked")
@@ -25,7 +29,7 @@ class OmniWindow(Gtk.Window):
         self.search_term = ''
         self.search_button = Gtk.Button(label='Search')
         self.search_button.connect('clicked', self.on_search_button_click)
-        self.search_box.pack_start(self.search_entry, False, True, 0)
+        self.search_box.pack_start(self.search_entry, True, True, 0)
         self.search_box.pack_start(self.search_button, False, True, 0)
         self.search_button.set_margin_end(10)
 
@@ -41,11 +45,11 @@ class OmniWindow(Gtk.Window):
         self.search_update_all_button = Gtk.Button(label='Update All')
         self.search_update_all_button.connect('clicked', self.on_update_all_button_click)
 
-        self.top_bar_box.pack_start(self.search_box, False, True, 0)
-        self.top_bar_box.pack_start(self.search_all_button, False, True, 0)
-        self.top_bar_box.pack_start(self.search_updatable_button, False, True, 0)
-        self.top_bar_box.pack_start(self.search_installed_button, False, True, 0)
-        self.top_bar_box.pack_start(self.search_update_all_button, False, True, 0)
+        self.top_bar_box.pack_start(self.search_box, True, True, 5)
+        self.top_bar_box.pack_start(self.search_all_button, False, True, 5)
+        self.top_bar_box.pack_start(self.search_updatable_button, False, True, 5)
+        self.top_bar_box.pack_start(self.search_installed_button, False, True, 5)
+        self.top_bar_box.pack_start(self.search_update_all_button, False, True, 5)
 
         self.pkg_list_store = Gtk.ListStore(str, str, str, str)
         self.search_filter = self.pkg_list_store.filter_new()
@@ -94,6 +98,7 @@ class OmniWindow(Gtk.Window):
         self.app_scrolled_window.add(self.app_info_label)
         self.app_scrolled_window.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
         self.app_info_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL)
+        self.app_info_box.set_margin_right(10)
         self.app_info_box.pack_start(self.app_info_button_box, False, True, 0)
         self.app_info_box.pack_start(self.app_info_title, False, True, 0)
         self.app_info_box.pack_start(self.app_scrolled_window, True, True, 0)
@@ -243,7 +248,7 @@ class OmniWindow(Gtk.Window):
     def populate_list(self, items):
         self.clear_list()
         for item in items:
-            self.pkg_list_store.append([item['id'], item['pm'], item['name'], truncate_text(item['summary'], 40)])
+            self.pkg_list_store.append([item['id'], item['pm'], item['name'], omni.truncate_text(item['summary'], 40)])
     
     def stat_bar_start_task(self, task_str):
         self.stat_bar_spinner.start()
@@ -295,14 +300,12 @@ class GioAsyncWorker(GObject.Object):
         result = self.func(*self.args)
         task.return_value(result)
 
-def truncate_text(text, size):
-    if len(text) > size:
-        return text[0:size-3] + '...'
-    else:
-        return text
+def run():
+    win = OmniWindow()
+    win.connect('destroy', Gtk.main_quit)
+    win.show_all()
+    win.on_window_show()
+    Gtk.main()
 
-win = OmniWindow()
-win.connect('destroy', Gtk.main_quit)
-win.show_all()
-win.on_window_show()
-Gtk.main()
+if __name__ == '__main__':
+    run()

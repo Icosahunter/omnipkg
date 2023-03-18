@@ -1,5 +1,5 @@
 import argparse
-import common as omni
+import omnipkg.common as omni
 from tabulate import tabulate
 
 parser = argparse.ArgumentParser(
@@ -10,13 +10,14 @@ parser = argparse.ArgumentParser(
 subparsers = parser.add_subparsers()
 
 def search(args):
-    print(tabulate(omni.search(args.package)))
+
+    print(format_results(omni.search(args.package)))
 
 def installed(args):
-    print(tabulate(omni.installed()))
+    print(format_results(omni.installed()))
 
 def updatable(args):
-    print(tabulate(omni.updatable()))
+    print(format_results(omni.updatable()))
 
 def install(args):
     print(omni.install(args.package))
@@ -36,6 +37,11 @@ def info(args):
         print(f'=== From {pm} ===\n')
         print(info['result'])
         print('\n\n')
+
+def format_results(res):
+    for x in res:
+        x['summary'] = omni.truncate_text(x['summary'], 60)
+    return tabulate(res, headers='keys')
 
 search_parser = subparsers.add_parser('search', aliases=['sr'])
 search_parser.add_argument('package')
@@ -66,5 +72,9 @@ installed_parser.set_defaults(func=installed)
 updatable_parser = subparsers.add_parser('updatable', aliases=['lu'])
 updatable_parser.set_defaults(func=updatable)
 
-args = parser.parse_args()
-args.func(args)
+def run():
+    args = parser.parse_args()
+    args.func(args)
+
+if __name__ == '__main__':
+    run()

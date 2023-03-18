@@ -96,6 +96,12 @@ def format_info(info):
     info['info'] = paragraph
     return info
 
+def truncate_text(text, size):
+    if len(text) > size:
+        return text[0:size-3] + '...'
+    else:
+        return text
+
 def is_available(pkg_name, pm_name=None):
     return package in [pkg['id'] for pkg in search(pkg_name, pm_name)]
 
