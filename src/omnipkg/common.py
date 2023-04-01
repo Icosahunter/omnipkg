@@ -29,16 +29,13 @@ for path in pm_defs_dir.glob('*'):
         if shutil.which(pm_def['name']):
             pkg_managers.append(pm_def)
 
-
 for path in (installed_path / 'data/pm-defs').glob('*'):
     pm_names = [pm['name'] for pm in pkg_managers]
     with open(path) as f:
         pm_def = json.load(f)
-        new_path = pm_defs_dir / path.name
-        if not pm_def['name'] in pm_names and not new_path.exists():
-                shutil.copy(path, new_path)
-                if shutil.which(pm_def['name']):
-                    pkg_managers.append(pm_def)
+        if not pm_def['name'] in pm_names:
+            if shutil.which(pm_def['name']):
+                pkg_managers.append(pm_def)
 
 def run(cmd_name, pm_name=None, pkg_name=None, capture_output=False, run_privileged=False):
     result = 0

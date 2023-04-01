@@ -1,2 +1,1 @@
-include src/omnipkg/data/pm-defs/*.json
-include src/omnipkg/data/*.desktop
+include src/omnipkg/data/**/*

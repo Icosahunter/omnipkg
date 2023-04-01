@@ -4,7 +4,7 @@
 Type=Application
 
 # The version of the desktop entry specification to which this file complies
-Version=0.1
+Version=0.2
 
 # The name of the application
 Name=OmniPkg
@@ -13,7 +13,7 @@ Name=OmniPkg
 Comment=A GUI wrapper around your package managers
 
 # The path to the folder in which the executable is run
-Path=bin
+Path=/usr/bin
 
 # The executable of the application, possibly with arguments.
 Exec=omnipkg-gui

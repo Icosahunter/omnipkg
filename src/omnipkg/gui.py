@@ -1,4 +1,6 @@
 import omnipkg.common as omni
+import omnipkg.install as install
+import sys
 import gi
 import asyncio
 gi.require_version('Gtk', '3.0')
@@ -301,11 +303,17 @@ class GioAsyncWorker(GObject.Object):
         task.return_value(result)
 
 def run():
-    win = OmniWindow()
-    win.connect('destroy', Gtk.main_quit)
-    win.show_all()
-    win.on_window_show()
-    Gtk.main()
+    if len(sys.argv) > 1:
+        if sys.argv[1] == 'install-appfiles':
+            install.install_files(install.linux_appfiles)
+        elif sys.argv[1] == 'uninstall-appfiles':
+            install.uninstall_files(install.linux_appfiles)
+    else:
+        win = OmniWindow()
+        win.connect('destroy', Gtk.main_quit)
+        win.show_all()
+        win.on_window_show()
+        Gtk.main()
 
 if __name__ == '__main__':
     run()
