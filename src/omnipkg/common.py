@@ -112,7 +112,7 @@ def truncate_text(text, size):
         return text
 
 def is_available(pkg_name, pm_name=None):
-    return package in [pkg['id'] for pkg in search(pkg_name, pm_name)]
+    return pkg_name in [pkg['id'] for pkg in search(pkg_name, pm_name)]
 
 def is_updatable(pkg_name, pm_name=None):
     if cache is not None:

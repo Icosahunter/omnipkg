@@ -214,7 +214,7 @@ class OmniWindow(Gtk.Window):
         self.update_cache()
     
     def on_update_all_button_click(self, button):
-        self.gio_async.run_async(omni.update_all, None, None)
+        self.gio_async.run_async(omni.update_all, [], None)
         self.update_cache()
 
     def on_search_radio_button_toggle(self, button, name):
