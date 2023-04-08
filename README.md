@@ -30,8 +30,8 @@ OmniPkg is still in development, currently to use it you will simply:
  - Pacman (untested)
 
  # TODO
- - [] Add support for Apt package manager
- - [] Add support for Snap package manager
- - [] Fix cli install so that if there are multiple results you can select between them (kind of like how Flatpak does it)
- - [] Make it so cli doesn't use polkit (and thus you just use sudo like you would with any other cli package manager)
- - [] Use a polkit Python module instead of pkexec and abstract this into a separate interface in atnicipation of supporting other operating systems down the line
+ - [ ] Add support for Apt package manager
+ - [ ] Add support for Snap package manager
+ - [ ] Fix cli install so that if there are multiple results you can select between them (kind of like how Flatpak does it)
+ - [ ] Make it so cli doesn't use polkit (and thus you just use sudo like you would with any other cli package manager)
+ - [ ] Use a polkit Python module instead of pkexec and abstract this into a separate interface in atnicipation of supporting other operating systems down the line
