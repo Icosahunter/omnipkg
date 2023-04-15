@@ -200,21 +200,25 @@ class OmniWindow(Gtk.Window):
     
     def on_install_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
-        self.gio_async.run_async(omni.install, model[i][0:1], None)
+        self.stat_bar_start_task(f'Installing package "{model[i][0]}"...')
+        self.gio_async.run_async(omni.install, model[i][0:1], self.stat_bar_end_task_callback)
         self.update_cache()
     
     def on_uninstall_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
-        self.gio_async.run_async(omni.uninstall, model[i][0:1], None)
+        self.stat_bar_start_task(f'Uninstalling package "{model[i][0]}"...')
+        self.gio_async.run_async(omni.uninstall, model[i][0:1], self.stat_bar_end_task_callback)
         self.update_cache()
     
     def on_update_button_click(self, button):
         model, i = self.pkg_list_view_selection.get_selected()
-        self.gio_async.run_async(omni.update, model[i][0:1], None)
+        self.stat_bar_start_task(f'Updating package "{model[i][0]}"...')
+        self.gio_async.run_async(omni.update, model[i][0:1], self.stat_bar_end_task_callback)
         self.update_cache()
     
     def on_update_all_button_click(self, button):
-        self.gio_async.run_async(omni.update_all, [], None)
+        self.stat_bar_start_task(f'Updating all packages...')
+        self.gio_async.run_async(omni.update_all, [], self.stat_bar_end_task_callback)
         self.update_cache()
 
     def on_search_radio_button_toggle(self, button, name):
@@ -259,6 +263,9 @@ class OmniWindow(Gtk.Window):
     def stat_bar_end_task(self):
         self.stat_bar_spinner.stop()
         self.stat_bar_label.set_text('')
+
+    def stat_bar_end_task_callback(self, res):
+        self.stat_bar_end_task()
 
     def search_filter_func(self, model, iter, data):
         return self.search_mode == 'all' or self.search_term.isspace() or self.search_term in model[iter][0]

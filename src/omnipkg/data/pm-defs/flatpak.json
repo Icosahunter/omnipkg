@@ -1,11 +1,25 @@
-{
-    "name": "flatpak",
-    "search":["flatpak search --columns=name,application,description {package}", "(?P<name>.+?)\t(?P<id>.+?)\t(?P<summary>.+?)\n"],
-    "install": "flatpak install -y {package}",
-    "uninstall": "flatpak remove -y {package}",
-    "update": "flatpak update {package}",
-    "update-all": "flatpak update",
-    "installed": ["flatpak list --columns=name,application,description", "(?P<name>.+?)\t(?P<id>.+?)\t(?P<summary>.+?)\n"],
-    "updatable": ["flatpak remote-ls --updates --columns=name,application,description", "(?P<name>.+?)\t(?P<id>.+?)\t(?P<summary>.+?)\n"],
-    "info": ["flatpak search --columns=name,application,description {package}", "(?P<name>.+?)\t(?P<id>.+?)\t(?P<info>.+?)\n"]
-}
+[
+    {
+        "name": "flatpak",
+        "search": [
+            "flatpak search --columns=name,application,description {package}",
+            "(?P<name>.+?)\t(?P<id>.+?)\t(?P<summary>.+?)\n"
+        ],
+        "install": "flatpak install -y {package}",
+        "uninstall": "flatpak remove -y {package}",
+        "update": "flatpak update {package}",
+        "update-all": "flatpak update",
+        "installed": [
+            "flatpak list --columns=name,application,description",
+            "(?P<name>.+?)\t(?P<id>.+?)\t(?P<summary>.+?)\n"
+        ],
+        "updatable": [
+            "flatpak remote-ls --updates --columns=name,application,description",
+            "(?P<name>.+?)\t(?P<id>.+?)\t(?P<summary>.+?)\n"
+        ],
+        "info": [
+            "flatpak search --columns=name,application,description {package}",
+            "(?P<name>.+?)\t(?P<id>.+?)\t(?P<info>.+?)\n"
+        ]
+    }
+]
