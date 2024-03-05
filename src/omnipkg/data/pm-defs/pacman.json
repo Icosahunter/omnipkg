@@ -1,25 +1,11 @@
-[
-    {
-        "name": "pacman",
-        "search": [
-            "pacman -Ss {package}",
-            "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n"
-        ],
-        "install": "pacman -Syu {package}",
-        "uninstall": "pacman -Rsc {package}",
-        "update": "pacman -Syu {package}",
-        "update-all": "pacman -Syu",
-        "installed": [
-            "pacman -Q",
-            "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n"
-        ],
-        "updatable": [
-            "pacman -Qu",
-            "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n"
-        ],
-        "info": [
-            "pacman -Si {package}",
-            "Name +: (?P<id>.+?) (.|\n)*Description +: (?P<info>.+?)\n"
-        ]
-    }
-]
+{
+    "name"      :   "pacman",
+    "search"    : [ "pacman -Ss {package}", "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n" ],
+    "install"   :   "pacman -Syu {package}",
+    "uninstall" :   "pacman -Rsc {package}",
+    "update"    :   "pacman -Syu {package}",
+    "update-all":   "pacman -Syu",
+    "installed" : [ "pacman -Q", "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n" ],
+    "updatable" : [ "pacman -Qu", "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n" ],
+    "info"      : [ "pacman -Si {package}", "Name +: (?P<id>.+?) (.|\n)*Description +: (?P<info>.+?)\n" ]
+}

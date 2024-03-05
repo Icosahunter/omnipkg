@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="css/pico.min.css">
+        <title>Hello, world!</title>
+    </head>
+    <body>
+        <nav class="container-fluid">
+            <ul>
+                <li> <input type="search" id="search" name="search" placeholder="search"> </li>
+            </ul>
+            <ul>
+                <details role="list">
+                    <summary id="action-list-label" aria-haspopup="listbox">Queue</summary>
+                    <ul id="action-list" role="listbox">
+                    </ul>
+                  </details>
+                <li> <a onclick="eel.install(get_selection())">Install</a> </li>
+                <li> <a onclick="eel.uninstall(get_selection())">Uninstall</a> </li>
+                <li> <a onclick="eel.update(get_selection())">Update</a> </li>
+            </ul>
+        </nav>
+        <main class="container">
+            <progress id="progress" style="display: none;"></progress>
+            <div role="document">
+                <figure>
+                    <table id="pkg-table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Select</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">ID</th>
+                                <th scope="col">PM</th>
+                                <th scope="col">Summary</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </figure>
+            </div>
+        </main>
+    </body>
+    <script type="text/javascript" src="/eel.js"></script>
+    <script>
+        headers   = ['Select', 'Status', 'Name', 'ID', 'PM', 'Summary'];
+        pkg_table = document.getElementById('pkg-table');
+        action_list = document.getElementById('action-list');
+        action_list_label = document.getElementById('action-list-label');
+        progress = document.getElementById('progress');
+        search = document.getElementById('search');
+        table_data = [];
+
+        search.addEventListener('keypress', function(event) {
+            // If the user presses the 'Enter' key on the keyboard
+            if (event.key === 'Enter') {
+                // Cancel the default action, if needed
+                event.preventDefault();
+                // Show loading indicator
+                show_progress();
+                eel.search(search.value)(populate_table);
+            }
+        }); 
+
+        function status_label(pkg_data) {
+            if (pkg_data['installed']) {
+                return '<p style="color: green;">installed</p>'
+            }
+            else {
+                return 'not installed'
+            }
+        }
+
+        eel.expose(update_table);
+        function update_table() {
+            // Show loading indicator
+            show_progress();
+            eel.search(search.value)(populate_table);
+        }
+
+        eel.expose(update_entry);
+        function update_entry(pkg, pm, f, v) {
+            data = table_data.map (
+                (x) => {
+                    if (x['id'] == pkg && x['pm'] == pm) {
+                        x[f] = v;
+                        return x;
+                    }
+                    else {
+                        return x;
+                    }
+                });
+            populate_table(data);
+        }
+
+        eel.expose(populate_table);
+        function populate_table(data) {
+
+            // Search finished, hide loading indicator
+            hide_progress();
+
+            table_data = data;
+
+            data = data.map(
+                (x) => ({
+                            Status : status_label(x),
+                            Name   : x['name'],
+                            ID     : x['id'],
+                            PM     : x['pm'],
+                            Summary: x['summary']
+                        })
+            )
+
+            text = '';
+
+            for (let x of headers) {
+                text += '<th>' + x + '</th>';
+            }
+
+            for (let x of data) {
+                text += '<tr>';
+                for (let y of headers) {
+                    if (y === 'Select') {
+                        text += '<td><input type="checkbox" name="pkg-checkbox" data-pkg="' + x['ID'] + '" data-pm="' + x['PM'] + '"></input></td>';
+                    }
+                    else {
+                        text += '<td>' + (y in x ? x[y] : '---' ) + '</td>';
+                    }
+                }
+                text += '</tr>';
+            }
+            pkg_table.innerHTML = text;
+        }
+
+        eel.expose(get_selection)
+        function get_selection() {
+            checkboxes = document.getElementsByName('pkg-checkbox');
+            checkedCheckboxes = Array.prototype.slice.call(checkboxes).filter(x => x.checked==true)
+            return checkedCheckboxes.map(x => [x.dataset.pkg, x.dataset.pm])
+        }
+
+        eel.expose(populate_actions)
+        function populate_actions(actions) {
+            text = '';
+            action_list_label.setAttribute('aria-busy', actions.length > 0);
+            if (actions.length > 0) {
+                text += '<li aria-busy="true">' + actions[0].join(' ') + '</li>\n';
+                for (let i=1; i < actions.length; i++) {
+                    text += '<li>' + actions[i].join(' ') + '</li>\n';
+                }
+            }
+            action_list.innerHTML = text;
+        }
+
+        eel.expose(show_progress)
+        function show_progress() {
+            progress.style.display = 'block';
+        }
+
+        eel.expose(hide_progress)
+        function hide_progress() {
+            progress.style.display = 'none';
+        }
+    </script>
+</html>
