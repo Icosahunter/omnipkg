@@ -2,7 +2,6 @@ import omnipkg.common as omni
 from pathlib import Path
 import time
 import threading
-import eel
 
 action_queue = []
 id_counter = 0
