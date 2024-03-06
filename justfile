@@ -1,5 +1,6 @@
 build:
-    rm -r dist
+    rm -r -f dist
+    pyside6-uic ./src/omnipkg/mainwindow.ui -o ./src/omnipkg/ui_mainwindow.py
     python3 -m build
 
 install: build

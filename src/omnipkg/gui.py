@@ -2,32 +2,12 @@ import omnipkg.common as omni
 from pathlib import Path
 import time
 import threading
+from PySide6.QtWidgets import QApplication, QMainWindow
+from omnipkg.mainwindow import MainWindow
+import sys
 
 action_queue = []
 id_counter = 0
-
-@eel.expose
-def install(pkgs):
-    for pkg, pm in pkgs:
-        add_action(('install', pkg, pm))
-
-@eel.expose
-def uninstall(pkgs):
-    for pkg, pm in pkgs:
-        add_action(('uninstall', pkg, pm))
-
-@eel.expose
-def update(pkgs):
-    for pkg, pm in pkgs:
-        add_action(('update', pkg, pm))
-
-@eel.expose
-def search(query):
-    return omni.run('search', query)
-
-@eel.expose
-def is_installed(pkg, pm):
-    return omni.is_installed(pkg, pm)
 
 def add_action(action):
     action_queue.append(action)
@@ -49,11 +29,16 @@ def action_thread_target():
             time.sleep(0.01)
 
 def run():
+
     omni.init()
+
+    app = QApplication(sys.argv)
+    window = MainWindow()
+    window.show()
+    app.exec()
+
     action_thread = threading.Thread(target=action_thread_target)
     action_thread.start()
-    eel.init(str(Path(__file__).parent / 'eel-gui'))
-    eel.start('index.html', mode='')
 
 if __name__ == '__main__':
     run()
