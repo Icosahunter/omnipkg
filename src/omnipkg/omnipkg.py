@@ -53,7 +53,10 @@ class Omnipkg:
         if 'icon_url' in package:
             icon_file = base64.b64encode(package['icon_url'].encode('ascii')).decode('ascii')
             if not icon_file in self.icon_cache:
-                img_data = requests.get(package['icon_url']).content
-                self.icon_cache[icon_file] = img_data
+                try:
+                    img_data = requests.get(package['icon_url']).content
+                    self.icon_cache[icon_file] = img_data
+                except:
+                    return None
             return self.icon_cache.dir / icon_file
         return None

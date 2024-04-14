@@ -122,7 +122,8 @@ class Package:
     def _id_to_url(self, id):
         url = id.split('.')
         url.reverse()
-        url = 'https://' + '.'.join(url[1:-1])
+        url = 'https://' + '.'.join(url[-2:])
+        print(url)
         return url
     
     def _id_to_name(self, id):
@@ -141,3 +142,4 @@ class Package:
             name = name.title()
 
         return name
+    
