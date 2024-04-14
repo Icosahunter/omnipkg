@@ -3,3 +3,4 @@ dist
 src/omnipkg.egg-info
 *.pyc
 ui_*.py
+venv

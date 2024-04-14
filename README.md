@@ -9,6 +9,9 @@ OmniPkg is still in development. It is not itself packaged for any distros and i
  - Add new package managers with simple JSON files
 
 # Using It
+
+--- Omnipkg is currently in the middle of a refactor and the instructions below may not work ---
+
 OmniPkg is still in development, currently to use it you will simply:
  - Clone the repo
  - In a terminal navigate to the git repo folder
@@ -21,17 +24,17 @@ OmniPkg is still in development, currently to use it you will simply:
  - To use the CLI app run "omnipkg" in a terminal, get help on the commands with "omnipkg --help"
 
  # Configuration
- You can add or change the package definition JSON files.
- You can find these files in ~/.config/omnipkg/pm-defs after installation.
+ You can add or change the package manager definition JSON files. To do so, add your new pm-def files in the ~/.config/omnipkg/pm-defs directory.
 
  # Supported package managers
  - Eopkg
  - Flatpak
+ - Snap
  - Pacman (untested)
 
  # TODO
- - [ ] Add support for Apt package manager
- - [ ] Add support for Snap package manager
- - [ ] Fix cli install so that if there are multiple results you can select between them (kind of like how Flatpak does it)
- - [ ] Make it so cli doesn't use polkit (and thus you just use sudo like you would with any other cli package manager)
- - [ ] Use a polkit Python module instead of pkexec and abstract this into a separate interface in atnicipation of supporting other operating systems down the line
+ - Add support for Apt package manager
+ - Fix cli install so that if there are multiple results you can select between them (kind of like how Flatpak does it)
+ - Make it so cli doesn't use polkit (and thus you just use sudo like you would with any other cli package manager)
+ - Polish GUI
+ - Add way to clear cache and advanced configuration/settings

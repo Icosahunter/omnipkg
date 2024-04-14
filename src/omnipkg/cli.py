@@ -10,26 +10,25 @@ parser = argparse.ArgumentParser(
 subparsers = parser.add_subparsers()
 
 def search(args):
-
-    print(format_results(omni.search(args.package)))
+    print(format_results(omni.run('search', args.package)))
 
 def installed(args):
-    print(format_results(omni.installed()))
+    print(format_results(omni.run('installed')))
 
 def updatable(args):
-    print(format_results(omni.updatable()))
+    print(format_results(omni.run('updatable')))
 
 def install(args):
-    print(omni.install(args.package))
+    print(omni.run('install', args.package))
 
 def uninstall(args):
-    omni.uninstall(args.package)
+    omni.run('uninstall', args.package)
 
 def update(args):
-    omni.update(args.package)
+    omni.run('update', args.package)
 
 def update_all(args):
-    omni.update_all(args.package)
+    omni.run('update_all', args.package)
 
 def info(args):
     for info in omni.info(args.package):

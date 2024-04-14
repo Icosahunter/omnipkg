@@ -1,11 +1,12 @@
 {
     "name"      :   "snap",
-    "search"    : [ "snap find {package}", "\n(?P<id>.+?)  +.+  +.+  +(?P<summary>.+?)" ],
+    "rev-dns"   :   false,
+    "search"    : [ "snap find {package}", "{id} {summary}\n" ],
     "install"   :   "snap install {package}",
     "uninstall" :   "snap remove {package}",
     "update"    :   "snap refresh {package}",
     "update-all":   "snap refresh",
-    "installed" : [ "snap list", "\n(?P<id>.+?)" ],
-    "updatable" : [ "snap refresh --list", "(?<!All snaps up to date\\.)\n(?P<id>.+?)  +- (?P<summary>.+?)" ],
-    "info"      : [ "snap info {package}", "name: +(?P<id>.+?)\n(.|\n)*description: \\|\n(?P<info>(.|\n)+?)\n\\S*:" ]
+    "installed" : [ "snap list", "{id} {summary}\n" ],
+    "updatable" : [ "snap refresh --list", "{id} {summary}\n" ],
+    "info"      : [ "snap info --verbose {package}", "name:{:s}{id}\nsummary:{:s}{summary}\n{}contact:{:s}- {website}\n{}description: |\n{description}notes:"]
 }

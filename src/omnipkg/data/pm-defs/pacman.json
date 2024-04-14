@@ -1,11 +1,12 @@
 {
     "name"      :   "pacman",
-    "search"    : [ "pacman -Ss {package}", "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n" ],
+    "rev-dns"   :   false,
+    "search"    : [ "pacman -Ss {package}", "{id} {} {}\n {summary}" ],
     "install"   :   "pacman -Syu {package}",
     "uninstall" :   "pacman -Rsc {package}",
     "update"    :   "pacman -Syu {package}",
     "update-all":   "pacman -Syu",
-    "installed" : [ "pacman -Q", "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n" ],
-    "updatable" : [ "pacman -Qu", "(?P<id>.+?) .+ .+\n +(?P<summary>.+?)\n" ],
-    "info"      : [ "pacman -Si {package}", "Name +: (?P<id>.+?) (.|\n)*Description +: (?P<info>.+?)\n" ]
+    "installed" : [ "pacman -Q", "{id} {} {}\n {summary}" ],
+    "updatable" : [ "pacman -Qu", "{id} {} {}\n {summary}" ],
+    "info"      : [ "pacman -Si {package}", "Name {}: {id} {}Description {}: {description}" ]
 }

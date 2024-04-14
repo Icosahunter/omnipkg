@@ -1,11 +1,13 @@
 {
     "name"      :   "eopkg",
-    "search"    : [ "eopkg sr -N {package}", "(?P<id>.+?)  +- (?P<summary>.+?)\n" ],
+    "rev-dns"   :   false,
+    "search"    : [ "eopkg sr -N {package}", "{id} {}- {summary}\n" ],
     "install"   :   "eopkg it -y {package}",
     "uninstall" :   "eopkg rm {package}",
     "update"    :   "eopkg up -y {package}",
     "update-all":   "eopkg up",
-    "installed" : [ "eopkg li", "(?P<id>.+?)  +- (?P<summary>.+?)\n" ],
-    "updatable" : [ "eopkg lu", "(?<!No packages to upgrade\\.)(?P<id>.+?)  +- (?P<summary>.+?)\n" ],
-    "info"      : [ "eopkg info {package}", "Name +: (?P<id>.+?),(.|\n)*Description +: (?P<info>(.|\n)+?)\n.*:" ]
+    "installed" : [ "eopkg li", "{id} {}- {summary}\n" ],
+    "updatable" : [ "eopkg lu", "{id} {}- {summary}\n" ],
+    "info"      : [ "eopkg info --xml {package}", "{}<Name>{id}</Name>{}<Summary xml:lang=\"en\">{summary}</Summary>{}<Description xml:lang=\"en\">{description}</Description>{}<Homepage>{website}</Homepage>"],
+    "repos"     : [ "eopkg lr", "{name} [{}]\n{url}\n"]
 }
