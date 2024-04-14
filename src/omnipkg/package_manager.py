@@ -4,6 +4,8 @@ from omnipkg.cache import ObjectCache
 import omnipkg.dirs as dirs
 from pathlib import Path
 import requests
+from lxml import etree
+from urllib.parse import urlsplit
 
 class PackageManager():
 
@@ -77,6 +79,15 @@ class Package:
             return self.data[key]
         return None
     
+    def __contains__(self, key):
+        if key in self.data:
+            return True
+        else:
+            self._fill_missing_info()
+            if key in self.data:
+                return True
+        return False
+    
     def _fill_missing_info(self):
         if self.id in self.pm.pkg_cache:
             self.data = self.pm.pkg_cache[self.id]
@@ -88,10 +99,10 @@ class Package:
                 self.data['name'] = self._id_to_name(self.id)
             if not 'website' in self.data and self.pm.rev_dns:
                 self.data['website'] = self._id_to_url(self.id)
-            #if not 'icon' in self.data and 'website' in self.data:
-            #    icon_url = self._website_to_icon_url(self.data['website'])
-            #    if icon_url is not None:
-            #        self.data['icon_url'] = icon_url
+            if not 'icon_url' in self.data and 'website' in self.data:
+                icon_url = self._website_to_icon_url(self.data['website'])
+                if icon_url is not None:
+                    self.data['icon_url'] = icon_url
         
         self.pm.pkg_cache[self.id] = self.data
 
@@ -101,6 +112,9 @@ class Package:
             html = requests.get(url).text
             tree = etree.fromstring(html, etree.HTMLParser())
             icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
+            if not icon_url.startswith('http'):
+                split_url = urlsplit(url)
+                icon_url = 'https://' + split_url.netloc + '/' + icon_url
         except:
             pass
         return icon_url

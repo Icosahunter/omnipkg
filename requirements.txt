@@ -4,3 +4,4 @@ parse
 appdirs
 tabulate
 requests
+lxml

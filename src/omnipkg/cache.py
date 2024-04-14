@@ -5,9 +5,7 @@ class ObjectCache:
     def __init__(self, file):
         self.file = Path(file)
         self.cache = {}
-        print(self.file)
         if not self.file.exists():
-            print('hello!')
             with open(self.file, 'w+') as f:
                 json.dump(self.cache, f, indent=4)
         else:
@@ -41,10 +39,10 @@ class FileCache:
         else:
             return None
     
-    def __setitem__(self, key):
+    def __setitem__(self, key, value):
         mode = 'wb+' if self.binary else 'w+'
         with open(self.dir / key, mode) as f:
-            f.write(data)
+            f.write(value)
     
     def __contains__(self, key):
         return (self.dir / key).exists()

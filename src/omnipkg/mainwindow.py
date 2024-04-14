@@ -1,6 +1,7 @@
 from omnipkg.ui_mainwindow import Ui_MainWindow
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
 from PySide6.QtCore import Signal, QThreadPool, QRunnable, QObject
+from PySide6.QtGui import QIcon
 
 class MainWindow(QMainWindow):
     def __init__(self, omnipkg):
@@ -34,18 +35,20 @@ class MainWindow(QMainWindow):
         self.update_table()
 
     def update_table(self):
-        header_labels = ['name', 'id', 'pm', 'summary', 'installed']
+        header_labels = ['icon', 'name', 'id', 'pm', 'summary', 'installed']
         self.ui.packageListTable.setRowCount(len(self.package_list))
         self.ui.packageListTable.setColumnCount(4)
         self.ui.packageListTable.setHorizontalHeaderLabels(header_labels)
         for i in range(len(self.package_list)):
             for j in range(len(header_labels)):
-                text = str(self.package_list[i][header_labels[j]])
                 item = QTableWidgetItem()
-                #if header_labels[j] == 'icon':
-                #    item.setIcon(text)
-                #else:
-                item.setText(text)
+                if header_labels[j] == 'icon':
+                    icon = self.omnipkg.get_icon(self.package_list[i])
+                    if icon is not None:
+                        item.setIcon(QIcon(str(icon)))
+                else:
+                    text = str(self.package_list[i][header_labels[j]])
+                    item.setText(text)
                 self.ui.packageListTable.setItem(i, j, item)
     
     def update_details(self):
