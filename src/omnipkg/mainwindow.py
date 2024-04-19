@@ -1,5 +1,6 @@
 from omnipkg.ui_mainwindow import Ui_MainWindow
 import omnipkg.dirs as dirs
+import omnipkg.conf as conf
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
 from PySide6.QtCore import Signal, QThreadPool, QRunnable, QObject
 from PySide6.QtGui import QIcon
@@ -77,19 +78,18 @@ class MainWindow(QMainWindow):
         self.update_table()
 
     def update_table(self):
-        header_labels = ['icon', 'name', 'id', 'pm', 'summary', 'installed']
         self.ui.packageListTable.setRowCount(len(self.package_list))
-        self.ui.packageListTable.setColumnCount(len(header_labels))
-        self.ui.packageListTable.setHorizontalHeaderLabels(header_labels)
+        self.ui.packageListTable.setColumnCount(len(conf.columns))
+        self.ui.packageListTable.setHorizontalHeaderLabels(conf.columns)
         for i in range(len(self.package_list)):
-            for j in range(len(header_labels)):
+            for j in range(len(conf.columns)):
                 item = QTableWidgetItem()
-                if header_labels[j] == 'icon':
-                    icon = self.package_list[i][header_labels[j]]
+                if conf.columns[j] == 'icon':
+                    icon = self.package_list[i][conf.columns[j]]
                     if icon is not None:
                         item.setIcon(QIcon(str(icon)))
                 else:
-                    text = str(self.package_list[i][header_labels[j]])
+                    text = str(self.package_list[i][conf.columns[j]])
                     item.setText(text)
                 self.ui.packageListTable.setItem(i, j, item)
     

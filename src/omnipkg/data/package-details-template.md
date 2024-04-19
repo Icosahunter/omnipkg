@@ -2,7 +2,7 @@
 
 # {name}
 
-**id**:      {id}\
+**id**: {id}\
 **website**: [{website}]({website})
 
 **description**: \
