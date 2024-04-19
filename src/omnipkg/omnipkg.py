@@ -1,12 +1,10 @@
 import appdirs
 from pathlib import Path
 import omnipkg.dirs as dirs
+import omnipkg.icon_cache as icon_cache
 from omnipkg.package_manager import PackageManager
-from omnipkg.cache import FileCache
-import requests
 import json
 import shutil
-import base64
 
 class Omnipkg:
 
@@ -16,7 +14,6 @@ class Omnipkg:
     
     def init(self):
         self._create_dirs()
-        self.icon_cache = FileCache(dirs.icon_cache_dir, binary=True)
         self._load_pms()
     
     def _create_dirs(self):
@@ -40,7 +37,7 @@ class Omnipkg:
                     if shutil.which(pm_def['name']):
                         self.pms[pm_def['name']] = (PackageManager(pm_def))
     
-    def run(self, command, package=None, pm=None):
+    def run(self, command, package=None, pm=None, **kwargs):
         results = []
         if pm is None:
             for pm in self.pms.values():
@@ -49,14 +46,13 @@ class Omnipkg:
             results = self.pms[pm].run(command, package)
         return results
     
-    def get_icon(self, package):
-        if 'icon_url' in package:
-            icon_file = base64.b64encode(package['icon_url'].encode('ascii')).decode('ascii')
-            if not icon_file in self.icon_cache:
-                try:
-                    img_data = requests.get(package['icon_url']).content
-                    self.icon_cache[icon_file] = img_data
-                except:
-                    return None
-            return self.icon_cache.dir / icon_file
-        return None
+    def clear_package_indexes(self):
+        for pm in self.pms.values():
+            pm.pkg_cache.clear()
+    
+    def clear_icon_cache(self):
+        icon_cache.clear()
+    
+    def index_packages(self):
+        for pm in self.pms.values():
+            pm.index_packages()

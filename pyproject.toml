@@ -2,10 +2,14 @@
 requires = ['setuptools']
 build-backend = 'setuptools.build_meta'
 
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
 [project]
 name = 'omnipkg'
 version = '0.0.3'
 description = 'A simple GUI and command-line tool wrapper around many package managers.'
+dynamic = ["dependencies"]
 
 [project.scripts]
 omnipkg = 'omnipkg:cli.run'

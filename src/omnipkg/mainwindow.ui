@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>692</width>
-    <height>402</height>
+    <width>765</width>
+    <height>526</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -56,6 +56,13 @@
                 <string>Installed</string>
                </property>
               </item>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="updateAllButton">
+              <property name="text">
+               <string>Update All</string>
+              </property>
              </widget>
             </item>
            </layout>
@@ -145,33 +152,8 @@
          </layout>
         </item>
         <item>
-         <widget class="QLabel" name="packageNameLabel">
-          <property name="font">
-           <font>
-            <pointsize>12</pointsize>
-            <fontweight>DemiBold</fontweight>
-           </font>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLabel" name="packageDescriptionLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string/>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-          </property>
-          <property name="wordWrap">
+         <widget class="QTextBrowser" name="packageDetailsTextBrowser">
+          <property name="openExternalLinks">
            <bool>true</bool>
           </property>
          </widget>
@@ -187,12 +169,37 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>692</width>
+     <width>765</width>
      <height>30</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menucache">
+    <property name="title">
+     <string>Cache</string>
+    </property>
+    <addaction name="separator"/>
+    <addaction name="clearIconCacheAction"/>
+    <addaction name="clearPackageIndexesAction"/>
+    <addaction name="indexPackagesAction"/>
+   </widget>
+   <addaction name="menucache"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="indexPackagesAction">
+   <property name="text">
+    <string>Index packages</string>
+   </property>
+  </action>
+  <action name="clearPackageIndexesAction">
+   <property name="text">
+    <string>Clear package indexes</string>
+   </property>
+  </action>
+  <action name="clearIconCacheAction">
+   <property name="text">
+    <string>Clear icon cache</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
