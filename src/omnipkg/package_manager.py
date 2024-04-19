@@ -62,13 +62,16 @@ class PackageManager():
     def package_exists(self, id):
         return id in [x['id'] for x in self.commands['search'](package=id)]
     
-    def run(self, cmd, package):
+    def run(self, cmd, package, verbose=True):
         if cmd in ['install', 'uninstall']:
             self.installed_pkgs = None
         if cmd in ['install', 'uninstall', 'update', 'update-all']:
             self.updatable_pkgs = None
         result = self.commands[cmd](package=package)
         result = [Package(pm=self, **x) for x in result if x['id'] != 'Name']
+        if verbose:
+            for package in result:
+                package._fill_missing_info()
         return result
 
 class Package(dict):

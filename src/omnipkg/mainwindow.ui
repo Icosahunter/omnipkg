@@ -182,7 +182,14 @@
     <addaction name="clearPackageIndexesAction"/>
     <addaction name="indexPackagesAction"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="columnsAction"/>
+   </widget>
    <addaction name="menucache"/>
+   <addaction name="menuView"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="indexPackagesAction">
@@ -198,6 +205,11 @@
   <action name="clearIconCacheAction">
    <property name="text">
     <string>Clear icon cache</string>
+   </property>
+  </action>
+  <action name="columnsAction">
+   <property name="text">
+    <string>Columns</string>
    </property>
   </action>
  </widget>
