@@ -21,3 +21,6 @@ def sha256(text):
     h = hashlib.sha256()
     h.update(text.encode('ascii'))
     return h.hexdigest()
+
+def clear():
+    cache.clear()

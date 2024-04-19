@@ -16,8 +16,7 @@ class ObjectCache:
     def clear(self):
         self.cache = {}
         self.save()
-        print('cleared!')
-        
+    
     def save(self):
         with open(self.file, 'w+') as f:
             json.dump(self.cache, f, indent=4, default=str)
@@ -41,8 +40,8 @@ class FileCache:
         self.dir.mkdir(exist_ok=True)
         self.binary = binary
     
-    def clear():
-        for file in glob.glob(self.dir / '*'):
+    def clear(self):
+        for file in glob.glob(str(self.dir) + '/*'):
             os.remove(file)
     
     def __getitem__(self, key):

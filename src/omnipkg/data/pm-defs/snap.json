@@ -1,6 +1,5 @@
 {
     "name"      :   "snap",
-    "rev-dns"   :   false,
     "search"    : [ "snap find {package}", "{id} {summary}\n" ],
     "install"   :   "snap install {package}",
     "uninstall" :   "snap remove {package}",

@@ -14,6 +14,7 @@ class PackageManager():
     def __init__(self, pm_def):
         self.commands = {}
         self.privileged_commands = [ 'install', 'uninstall', 'update', 'update_all' ]
+        self.rev_dns = None
         for k, v in pm_def.items():
             if k=='name':
                 self.name = v
@@ -62,12 +63,14 @@ class PackageManager():
     def package_exists(self, id):
         return id in [x['id'] for x in self.commands['search'](package=id)]
     
-    def run(self, cmd, package, verbose=True):
+    def run(self, cmd, package, verbose=True, trim_search=True):
         if cmd in ['install', 'uninstall']:
             self.installed_pkgs = None
         if cmd in ['install', 'uninstall', 'update', 'update-all']:
             self.updatable_pkgs = None
         result = self.commands[cmd](package=package)
+        if trim_search and cmd == 'search':
+            result = [x for x in result if package in repr(x).lower()]
         result = [Package(pm=self, **x) for x in result if x['id'] != 'Name']
         if verbose:
             for package in result:
@@ -128,11 +131,11 @@ class Package(dict):
             if len(info) > 0: 
                 self.data.update(info[0])
             if not 'name' in self.data:
-                self.data['name'] = self._id_to_name(self.data['id'])
-            if not 'website' in self.data and self.data['pm'].rev_dns:
-                self.data['website'] = self._id_to_url(self.data['id'])
+                self.data['name'] = self._id_to_name()
+            if not 'website' in self.data and self._id_is_rev_dns():
+                self.data['website'] = self._id_to_url()
             if not 'icon_url' in self.data and 'website' in self.data:
-                icon_url = self._website_to_icon_url(self.data['website'])
+                icon_url = self._website_to_icon_url()
                 if icon_url is not None:
                     self.data['icon_url'] = icon_url
             if not 'icon' in self.data and 'icon_url' in self.data:
@@ -141,40 +144,54 @@ class Package(dict):
                 self.data['description'] = self.data['summary']
         self.data['pm'].pkg_cache[self.data['id']] = self.data
 
-    def _website_to_icon_url(self, url):
-        icon_url = None
+    def _website_to_icon_url(self):
+
         try:
-            html = requests.get(url).text
+            response = requests.get(self.data['website'] + '/favicon.ico')
+            if response.status_code < 400:
+                return self.data['website'] + '/favicon.ico'
+        except:
+            pass
+        
+        try:
+            html = requests.get(self.data['website'], allow_redirects=True).text
             tree = etree.fromstring(html, etree.HTMLParser())
             icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
             if not icon_url.startswith('http'):
-                split_url = urlsplit(url)
+                split_url = urlsplit(self.data['website'])
                 netloc = split_url.netloc
                 if netloc.startswith('www.'):
                     netloc = netloc[4:]
-                icon_url = 'https://' + netloc + '/' + icon_url
+                icon_url = 'https://' + netloc + icon_url
+                return icon_url
+            else:
+                return icon_url
         except:
             pass
-        return icon_url
+        
+        return None
+    
+    def _id_is_rev_dns(self):
+        return self.data['pm'].rev_dns or (self.data['id'].count('.') >= 3 and len(self.data['id'].split('.')[0]) in [2, 3])
 
-    def _id_to_url(self, id):
-        url = id.split('.')
+    def _id_to_url(self):
+        url = self.data['id'].split('.')
         url.reverse()
         url = 'https://' + '.'.join(url[-2:])
         return url
     
-    def _id_to_name(self, id):
+    def _id_to_name(self):
 
-        name = id
+        name = self.data['id']
         
         if self.data['pm'].rev_dns:
             name = name.split('.')[-1]
         else:
-            if '-' in id:
+            if '-' in self.data['id']:
                 name = name.replace('-', ' ')
-            elif '_' in id:
+            elif '_' in self.data['id']:
                 name = name.replace('_', ' ')
-            elif '.' in id:
+            elif '.' in self.data['id']:
                 name = name.replace('.', ' ')
             name = name.title()
 
