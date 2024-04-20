@@ -5,16 +5,17 @@ import omnipkg.icon_cache as icon_cache
 from omnipkg.package_manager import PackageManager
 import json
 import shutil
+import requests_cache
 
 class Omnipkg:
 
     def __init__(self):
         self.pms = {}
-        self.icon_cache = None
     
     def init(self):
         self._create_dirs()
         self._load_pms()
+        requests_cache.install_cache(dirs.cache_dir / 'requests_cache.sqlite')
     
     def _create_dirs(self):
         dirs.data_dir.mkdir(exist_ok=True)

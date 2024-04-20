@@ -72,10 +72,11 @@ class PackageManager():
         if cmd in ['install', 'uninstall', 'update', 'update-all']:
             self.updatable_pkgs = None
         result = self.commands[cmd](package=package)
-        if conf.filter_search and cmd == 'search':
-            result = [x for x in result if package in repr(x).lower()]
-        if len(result) > conf.results_limit:
-            result = result[0:conf.results_limit-1]
+        if cmd == 'search':
+            if conf.filter_search: 
+                result = [x for x in result if package in repr(x).lower()]
+            if len(result) > conf.search_results_limit:
+                result = result[0:conf.search_results_limit-1]
         result = [Package(pm=self, **x) for x in result if x['id'] != 'Name']
         if conf.pre_fetch_info:
             for package in result:
@@ -212,13 +213,13 @@ class Package(dict):
     def _icon_url_from_github(self):
         url_path = urlsplit(self.data['website']).path
         name_keywords = '|'.join(self.data['name'].lower().split(' '))
-        readme_re = f'(\w|[/\.:-~])*/\S*(icon|logo|{name_keywords})\S*\.(png|jpg|svg|ico)'
+        readme_re = f'(?:"|\'|\()((?!.*(shields|backer|badge|indicator|status|build|screenshot).*)(\w|[/\.:-~])*/\S*(icon|logo|{name_keywords})\S*\.(png|jpg|svg|ico))'
         try:
             for branch in ['master', 'main']:
                 readme_url = f'https://github.com{url_path}/raw/{branch}/README.md'
                 response = requests.get(readme_url, allow_redirects=True, timeout=conf.requests_timeout)
                 if response.status_code < 400:
-                    icon_url = re.compile(readme_re, re.IGNORECASE).search(response.text).group(0)
+                    icon_url = re.compile(readme_re, re.IGNORECASE).search(response.text).group(1)
                     icon_url = self._fix_relative_url(f'https://github.com{url_path}/raw/{branch}/', icon_url)
                     print(icon_url)
                     return icon_url

@@ -11,6 +11,9 @@ class Command:
         self.privileged = privileged
         #self.thread
     
+    def __str__(self):
+        return self.command
+
     def __call__(self, **kwargs):
         cmd = self.command
         if kwargs != None:

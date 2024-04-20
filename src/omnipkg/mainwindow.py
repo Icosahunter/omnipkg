@@ -28,6 +28,7 @@ class MainWindow(QMainWindow):
         self.selected_package = None
         self.action_queue = []
         self.load_package_details_template()
+        self.setWindowIcon(QIcon(str(dirs.installed_dir / 'data/appfiles/omnipkg.png')))
 
     def update_all_click():
         self.run_action('update-all')
