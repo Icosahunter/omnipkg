@@ -1,6 +1,5 @@
 {
     "name"      :   "flatpak",
-    "rev-dns"   :   true,
     "search"    : [ "flatpak search --columns=name,application,description {package}", "{name}\t{id}\t{summary}\n" ],
     "install"   :   "flatpak install -y {package}",
     "uninstall" :   "flatpak remove -y {package}",

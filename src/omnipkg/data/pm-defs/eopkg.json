@@ -1,6 +1,5 @@
 {
     "name"      :   "eopkg",
-    "rev-dns"   :   false,
     "search"    : [ "eopkg sr -N {package}", "{id} {}- {summary}\n" ],
     "install"   :   "eopkg it -y {package}",
     "uninstall" :   "eopkg rm {package}",

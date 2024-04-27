@@ -1,6 +1,5 @@
 {
     "name"      :   "pacman",
-    "rev-dns"   :   false,
     "search"    : [ "pacman -Ss {package}", "{id} {} {}\n {summary}" ],
     "install"   :   "pacman -Syu {package}",
     "uninstall" :   "pacman -Rsc {package}",

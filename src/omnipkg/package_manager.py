@@ -1,9 +1,7 @@
 from parse import parse
 from omnipkg.command import Command
-from omnipkg.cache import ObjectCache
+from omnipkg.serobj import SerObj
 import omnipkg.dirs as dirs
-import omnipkg.icon_cache as icon_cache
-import omnipkg.conf as conf
 from pathlib import Path
 import requests
 from lxml import etree
@@ -29,6 +27,7 @@ class PackageManager():
         self.pkg_cache = ObjectCache(dirs.cache_dir / self.name / 'index.json')
         self.installed_pkgs = None
         self.updatable_pkgs = None
+        self.active_repo = None
     
     def __str__(self):
         return self.name
@@ -55,16 +54,16 @@ class PackageManager():
 
     def package_installed(self, id):
         if self.installed_pkgs == None:
-            self.installed_pkgs = [x['id'] for x in self.commands['installed']()]
+            self.installed_pkgs = [x.id for x in self.commands['installed']()]
         return id in self.installed_pkgs
     
     def package_updatable(self, id):
         if self.updatable_pkgs == None:
-            self.updatable_pkgs = [x['id'] for x in self.commands['updatable']()]
+            self.updatable_pkgs = [x.id for x in self.commands['updatable']()]
         return id in self.updatable_pkgs
     
     def package_exists(self, id):
-        return id in [x['id'] for x in self.commands['search'](package=id)]
+        return id in [x.id for x in self.commands['search'](package=id)]
     
     def run(self, cmd, package):
         if cmd in ['install', 'uninstall']:
@@ -77,80 +76,67 @@ class PackageManager():
                 result = [x for x in result if package in repr(x).lower()]
             if len(result) > conf.search_results_limit:
                 result = result[0:conf.search_results_limit-1]
-        result = [Package(pm=self, **x) for x in result if x['id'] != 'Name']
+        result = [Package(pm=self, **x) for x in result if x.id != 'Name']
         if conf.pre_fetch_info:
             for package in result:
                 package._fill_missing_info()
         return result
 
-class Package(dict):
+class Package(SerObj):
 
-    def __init__(self, *args, **kwargs):
-        self.data = {}
-        self.update(*args, **kwargs)
-
-    def update(self, *args, **kwargs):
-        self.data.update(dict(*args, **kwargs))
+    def __init__(self, data):
+        super().__init__(
+            data = data,
+            template = {
+                'installed': lambda: self.pm.package_installed(self.data['id']),
+                'updatable': lambda: self.pm.package_updatable(self.data['id'])
+            },
+            strict = False
+        )
     
-    def keys(self):
-        return self.data.keys()
-    
-    def values(self):
-        return self.data.values()
-    
-    def items(self):
-        return self.data.items()
-    
-    def __str__(self):
-        return self.data['id']
-
-    def __repr__(self):
-        return repr(self.data)
-
     def __getitem__(self, key):
-        if key == 'installed':
-            return self.data['pm'].package_installed(self.data['id'])
-        if key == 'updatable':
-            return self.data['pm'].package_updatable(self.data['id'])
-        if key in self.data:
-            return self.data[key]
-        self._fill_missing_info()
-        if key in self.data:
-            return self.data[key]
-        return None
+        try:
+            return super().__getitem__(key)
+        except KeyError:
+            self._fill_missing_info()
+            return super().__getitem__(key)
+
+    def __getattr__(self, key):
+        try:
+            return super().__getattr__(key)
+        except AttributeError:
+            self._fill_missing_info()
+            return super().__getattr__(key)
     
     def __contains__(self, key):
-        if key in self.data:
+        if super().__contains__(key):
             return True
         else:
             self._fill_missing_info()
-            if key in self.data:
-                return True
-        return False
+            return super().__contains__(key)
     
     def _fill_missing_info(self):
-        if self.data['id'] in self.data['pm'].pkg_cache:
-            pm = self.data['pm']
-            self.data.update(**{k:v for k,v in self.data['pm'].pkg_cache[self.data['id']].items() if k != 'pm'})
+        if self.id in self.pm.pkg_cache:
+            self.update(**{k:v for k,v in self.pm.pkg_cache[self.id].items() if k != 'pm'})
         else:
-            info = self.data['pm'].commands['info'](package=self.data['id'])
+            info = self.pm.commands['info'](package=self.id)
             if len(info) > 0: 
                 self.data.update(info[0])
-            if not 'name' in self.data:
-                self.data['name'] = self._id_to_name()
-            if not 'website' in self.data and self._id_is_rev_dns():
-                self.data['website'] = self._id_to_url()
-            if 'website' in self.data:
-                self.data['website'] = self._get_redirected_website()
-            if not 'icon_url' in self.data and 'website' in self.data:
+            if not 'name' in self:
+                self['name'] = self._id_to_name()
+            if not 'website' in self and self._id_is_rev_dns():
+                self['website'] = self._id_to_url()
+            if 'website' in self:
+                self['website'] = self._get_redirected_website()
+            if not 'icon_url' in self and 'website' in self:
                 icon_url = self._website_to_icon_url()
                 if icon_url is not None:
-                    self.data['icon_url'] = icon_url
-            if not 'icon' in self.data and 'icon_url' in self.data:
-                self.data['icon'] = icon_cache.get_icon(self)
-            if not 'description' in self.data and 'summary' in self.data:
-                self.data['description'] = self.data['summary']
-        self.data['pm'].pkg_cache[self.data['id']] = self.data
+                    self['icon_url'] = icon_url
+            if not 'icon' in self and 'icon_url' in self:
+                self['icon'] = icon_cache.get_icon(self)
+            if not 'description' in self and 'summary' in self:
+                self['description'] = self['summary']
+        self.pm.pkg_cache[self.id] = self.data
 
     def _get_redirected_website(self):
         try:
@@ -164,22 +150,22 @@ class Package(dict):
 
     def _website_to_icon_url(self):
 
-        spliturl = urlsplit(self.data['website'])
+        spliturl = urlsplit(self['website'])
         if spliturl.netloc == 'github.com' and spliturl.path != '/':
             return self._icon_url_from_github()
 
         try:
-            icon_url = self.data['website'] + '/favicon.ico'
+            icon_url = self['website'] + '/favicon.ico'
             if self._url_is_valid(icon_url):
                 return icon_url
         except:
             pass
         
         try:
-            html = requests.get(self.data['website'], allow_redirects=True, timeout=conf.requests_timeout).text
+            html = requests.get(self['website'], allow_redirects=True, timeout=conf.requests_timeout).text
             tree = etree.fromstring(html, etree.HTMLParser())
             icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
-            return self._fix_relative_url(self.data['website'], icon_url)
+            return self._fix_relative_url(self['website'], icon_url)
         except:
             pass
         requests
@@ -199,7 +185,7 @@ class Package(dict):
             return url
     
     def _id_is_rev_dns(self):
-        return self.data['pm'].rev_dns or (self.data['id'].count('.') >= 3 and len(self.data['id'].split('.')[0]) in [2, 3])
+        return self.pm.rev_dns or (self.id.count('.') >= 3 and len(self.id.split('.')[0]) in [2, 3])
 
     def _id_to_url(self):
         spliturl = self.data['id'].split('.')
@@ -211,8 +197,8 @@ class Package(dict):
         return url
     
     def _icon_url_from_github(self):
-        url_path = urlsplit(self.data['website']).path
-        name_keywords = '|'.join(self.data['name'].lower().split(' '))
+        url_path = urlsplit(self['website']).path
+        name_keywords = '|'.join(self['name'].lower().split(' '))
         readme_re = f'(?:"|\'|\()((?!.*(shields|backer|badge|indicator|status|build|screenshot).*)(\w|[/\.:-~])*/\S*(icon|logo|{name_keywords})\S*\.(png|jpg|svg|ico))'
         try:
             for branch in ['master', 'main']:
@@ -242,16 +228,16 @@ class Package(dict):
     
     def _id_to_name(self):
 
-        name = self.data['id']
+        name = self.id
         
-        if self.data['pm'].rev_dns:
+        if self.pm.rev_dns:
             name = name.split('.')[-1]
         else:
-            if '-' in self.data['id']:
+            if '-' in self.id:
                 name = name.replace('-', ' ')
-            elif '_' in self.data['id']:
+            elif '_' in self.id:
                 name = name.replace('_', ' ')
-            elif '.' in self.data['id']:
+            elif '.' in self.id:
                 name = name.replace('.', ' ')
             name = name.title()
 
