@@ -7,5 +7,6 @@
     "update-all":   "snap refresh",
     "installed" : [ "snap list", "{id} {summary}\n" ],
     "updatable" : [ "snap refresh --list", "{id} {summary}\n" ],
-    "info"      : [ "snap info --verbose {package}", "name:{:s}{id}\nsummary:{:s}{summary}\n{}:{:s}- {website:S}\nlicense:{}description: |\n{description}notes:"]
+    "info"      : [ "snap info --verbose {package}", "name:{:s}{id}\nsummary:{:s}{summary}\n{}:{:s}- {website:S}\nlicense:{}description: |\n{description}notes:"],
+    "remotes"   : [ "echo Snapcraft", "{remote}\n"]
 }

@@ -1,12 +1,12 @@
 {
     "name"      :   "eopkg",
     "search"    : [ "eopkg sr -N {package}", "{id} {}- {summary}\n" ],
-    "install"   :   "eopkg it -y {package}",
+    "install"   :   "eopkg it -y -r {remote} {package}",
     "uninstall" :   "eopkg rm {package}",
     "update"    :   "eopkg up -y {package}",
     "update-all":   "eopkg up",
-    "installed" : [ "eopkg li", "{id} {}- {summary}\n" ],
-    "updatable" : [ "eopkg lu", "{id} {}- {summary}\n" ],
-    "info"      : [ "eopkg info --xml {package}", "{}<Name>{id}</Name>{}<Summary xml:lang=\"en\">{summary}</Summary>{}<Description xml:lang=\"en\">{description}</Description>{}<Homepage>{website}</Homepage>"],
-    "repos"     : [ "eopkg lr", "{name} [{}]\n{url}\n"]
+    "installed" : [ "eopkg li -N", "{id} {}- {summary}\n" ],
+    "updatable" : [ "eopkg lu -N", "{id} {}- {summary}\n" ],
+    "info"      : [ "eopkg info -N --xml {package}", "{}<Name>{id}</Name>{}<Summary xml:lang=\"en\">{summary}</Summary>{}<Description xml:lang=\"en\">{description}</Description>{}<Homepage>{website}</Homepage>{}"],
+    "remotes"   : [ "eopkg lr -N", "{remote} [{}]\n{remote_url}\n"]
 }

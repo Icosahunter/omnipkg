@@ -3,12 +3,17 @@ import subprocess
 import platform
 import threading
 from parse import parse
+import string
 
 class Command:
     def __init__(self, cmd, parser=None, privileged=False):
         self.command = cmd
         self.parser = parser
         self.privileged = privileged
+        if parser is not None:
+            self.provides = [x[1] for x in string.Formatter().parse(parser) if not x[1] in [None, '']]
+        else:
+            self.provides = []
         #self.thread
     
     def __str__(self):

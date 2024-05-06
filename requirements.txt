@@ -6,3 +6,4 @@ tabulate
 requests
 lxml
 requests-cache
+tomli-w

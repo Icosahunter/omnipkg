@@ -1,6 +1,5 @@
 from omnipkg.ui_mainwindow import Ui_MainWindow
 import omnipkg.dirs as dirs
-import omnipkg.conf as conf
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
 from PySide6.QtCore import Signal, QThreadPool, QRunnable, QObject
 from PySide6.QtGui import QIcon
@@ -21,8 +20,8 @@ class MainWindow(QMainWindow):
         self.ui.packageListTable.cellClicked.connect(self.package_click)
         self.ui.searchComboBox.currentTextChanged.connect(self.search_combo_changed)
         self.ui.updateAllButton.clicked.connect(self.update_all_click)
-        self.ui.clearPackageIndexesAction.triggered.connect(self.omnipkg.clear_package_indexes)
-        self.ui.clearIconCacheAction.triggered.connect(self.omnipkg.clear_icon_cache)
+        self.ui.clearPackageIndexesAction.triggered.connect(self.omnipkg.pkg_cache.clear)
+        self.ui.clearIconCacheAction.triggered.connect(self.omnipkg.icon_cache.clear)
         self.ui.indexPackagesAction.triggered.connect(self.index_packages)
         self.package_list = []
         self.selected_package = None
@@ -80,17 +79,17 @@ class MainWindow(QMainWindow):
 
     def update_table(self):
         self.ui.packageListTable.setRowCount(len(self.package_list))
-        self.ui.packageListTable.setColumnCount(len(conf.columns))
-        self.ui.packageListTable.setHorizontalHeaderLabels(conf.columns)
+        self.ui.packageListTable.setColumnCount(len(self.omnipkg.config['columns']))
+        self.ui.packageListTable.setHorizontalHeaderLabels(self.omnipkg.config['columns'])
         for i in range(len(self.package_list)):
-            for j in range(len(conf.columns)):
+            for j in range(len(self.omnipkg.config['columns'])):
                 item = QTableWidgetItem()
-                if conf.columns[j] == 'icon':
-                    icon = self.package_list[i][conf.columns[j]]
+                if self.omnipkg.config['columns'][j] == 'icon':
+                    icon = self.package_list[i][self.omnipkg.config['columns'][j]]
                     if icon is not None:
                         item.setIcon(QIcon(str(icon)))
                 else:
-                    text = str(self.package_list[i][conf.columns[j]])
+                    text = str(self.package_list[i][self.omnipkg.config['columns'][j]])
                     item.setText(text)
                 self.ui.packageListTable.setItem(i, j, item)
     
