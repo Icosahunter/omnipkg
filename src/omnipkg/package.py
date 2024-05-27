@@ -10,7 +10,8 @@ class Package():
         if 'remote' not in self.data:
             self._get_remote()
         self.data['omnipkg_id'] = '{pm}/{remote}/{id}'.format(**self.data)
-
+        self._loaded = False
+        
     def update(self, data):
         self.data.update(data)
     
@@ -36,7 +37,7 @@ class Package():
             return self.data['pm'].package_updatable(self.data['id'])
         if key in self.data:
             return self.data[key]
-        self._fill_missing_info()
+        self._fill_missing_info(key)
         if key in self.data:
             return self.data[key]
         return None
@@ -45,7 +46,7 @@ class Package():
         if key in self.data:
             return True
         else:
-            self._fill_missing_info()
+            self._fill_missing_info(key)
             if key in self.data:
                 return True
         return False
@@ -61,87 +62,61 @@ class Package():
         if 'remote' not in self.data:
             self.data['remote'] = 'default'
     
-    def _fill_missing_info(self):
-        if self.data['omnipkg_id'] in self.data['pm'].omnipkg.pkg_cache:
+    def _fill_missing_info(self, key):
+
+        if key in self.data:
+            return True
+
+        if not self._loaded and self.data['omnipkg_id'] in self.data['pm'].omnipkg.pkg_cache:
             self.data.update(**{k:v for k,v in self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']].items() if k != 'pm'})
+            self._loaded = True
+            if key in self.data:
+                return True
+
+        commands = [x for x in self.data['pm'].commands.values() if key in x.provides]
+        if len(commands) > 0:
+            results = commands[0](id=self.data['id'], remote=self.data['remote'])
+            if len(results) > 0:
+                self.data.update(results[0])
+                if 'website' in results[0]:
+                    self.data['website'] = self._get_redirected_website(self.data['website'])
+                if key in self.data:
+                    return True
+        
+        if key == 'name':
+            self._id_to_name()
+        if key == 'description' and self._fill_missing_info('summary'):
+            self.data['description'] = self.data['summary']
+        if key == 'website':
+            self._id_to_website()
+        if key == 'icon_url' and self._fill_missing_info('website') and self._fill_missing_info('name'):
+            self._website_to_icon_url()
+        if key == 'icon' and self._fill_missing_info('icon_url'):
+            self.data['icon'] = self.data['pm'].omnipkg.icon_cache.get_icon(self)
+        if key in self.data:
+            return True
         else:
-            info = self.data['pm'].commands['info'](package=self.data['id'])
-            if len(info) > 0: 
-                self.data.update(info[0])
-            if not 'name' in self.data:
-                self.data['name'] = self._id_to_name()
-            if not 'website' in self.data and self._id_is_rev_dns():
-                self.data['website'] = self._id_to_url()
-            if 'website' in self.data:
-                self.data['website'] = self._get_redirected_website()
-            if not 'icon_url' in self.data and 'website' in self.data:
-                icon_url = self._website_to_icon_url()
-                if icon_url is not None:
-                    self.data['icon_url'] = icon_url
-            if not 'icon' in self.data and 'icon_url' in self.data:
-                self.data['icon'] = self.data['pm'].omnipkg.icon_cache.get_icon(self)
-            if not 'description' in self.data and 'summary' in self.data:
-                self.data['description'] = self.data['summary']
-        self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']] = self.data
-
-    def _get_redirected_website(self):
-        try:
-            response = requests.get(self.data['website'], timeout=self.data['pm'].omnipkg.config['requests_timeout'])
-            if response.status_code < 400:
-                return response.url
-        except:
-            pass
-
-        return self.data['website']
+            return False
 
     def _website_to_icon_url(self):
-
         spliturl = urlsplit(self.data['website'])
+        
         if spliturl.netloc == 'github.com' and spliturl.path != '/':
-            return self._icon_url_from_github()
-
-        try:
-            icon_url = self.data['website'] + '/favicon.ico'
-            if self._url_is_valid(icon_url):
-                return icon_url
-        except:
-            pass
-        
-        try:
-            html = requests.get(self.data['website'], allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout']).text
-            tree = etree.fromstring(html, etree.HTMLParser())
-            icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
-            return self._fix_relative_url(self.data['website'], icon_url)
-        except:
-            pass
-        
-        return None
-    
-    def _fix_relative_url(self, base_url, relative_url):
-        spliturl = urlsplit(base_url)
-        url = relative_url
-        if not url.startswith('http'):
-            netloc = spliturl.netloc
-            if netloc.startswith('www.'):
-                netloc = netloc[4:]
-            
-            url = urljoin('https://' + netloc + spliturl.path, url)
-            return url
+            self._icon_url_from_github()
         else:
-            return url
-    
-    def _id_is_rev_dns(self):
-        return self.data['pm'].rev_dns or (self.data['id'].count('.') >= 2 and len(self.data['id'].split('.')[0]) in [2, 3])
+            try:
+                icon_url = self.data['website'] + '/favicon.ico'
+                if self._url_is_valid(icon_url):
+                    self.data['icon_url'] = icon_url
+            except:
+                try:
+                    html = requests.get(self.data['website'], allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout']).text
+                    tree = etree.fromstring(html, etree.HTMLParser())
+                    icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
+                    self.data['icon_url'] = self._fix_relative_url(self.data['website'], icon_url)
+                except:
+                    pass
 
-    def _id_to_url(self):
-        spliturl = self.data['id'].split('.')
-        spliturl.reverse()
-        url = 'https://' + '.'.join(spliturl)
-        while not self._url_is_valid(url) and len(spliturl) > 2:
-            spliturl.pop(0)
-            url = 'https://' + '.'.join(spliturl[-2:])
-        return url
-    
     def _icon_url_from_github(self):
         url_path = urlsplit(self.data['website']).path
         name_keywords = '|'.join(self.data['name'].lower().split(' '))
@@ -153,7 +128,7 @@ class Package():
                 if response.status_code < 400:
                     icon_url = re.compile(readme_re, re.IGNORECASE).search(response.text).group(1)
                     icon_url = self._fix_relative_url(f'https://github.com{url_path}/raw/{branch}/', icon_url)
-                    return icon_url
+                    self.data['icon_url'] = icon_url
         except:
             pass
         
@@ -163,16 +138,21 @@ class Package():
         #    f.write(html)
         #icon_url = tree.xpath('//*[@id="repo-title-component"]')[0]
 
-        return None
-    
-    def _url_is_valid(self, url):
-        try:
-            return requests.get(url, timeout=self.data['pm'].omnipkg.config['requests_timeout']).status_code < 400
-        except:
-            return False
-    
-    def _id_to_name(self):
+    def _id_to_website(self):
+        if self._id_is_rev_dns():
+            spliturl = self.data['id'].split('.')
+            spliturl.reverse()
+            url = 'https://' + '.'.join(spliturl)
+            while not self._url_is_valid(url) and len(spliturl) > 2:
+                spliturl.pop(0)
+                url = 'https://' + '.'.join(spliturl[-2:])
+            if self._url_is_valid(url):
+                self.data['website'] = self._get_redirected_website(url)
 
+    def _id_is_rev_dns(self):
+        return self.data['pm'].rev_dns or (self.data['id'].count('.') >= 2 and len(self.data['id'].split('.')[0]) in [2, 3])
+
+    def _id_to_name(self):
         name = self.data['id']
         
         if self.data['pm'].rev_dns:
@@ -185,5 +165,35 @@ class Package():
             elif '.' in self.data['id']:
                 name = name.replace('.', ' ')
             name = name.title()
+        
+        self.data['name'] = name
 
-        return name
+    def _fix_relative_url(self, base_url, relative_url):
+        spliturl = urlsplit(base_url)
+        url = relative_url
+        if not url.startswith('http'):
+            netloc = spliturl.netloc
+            if netloc.startswith('www.'):
+                netloc = netloc[4:]
+            
+            url = urljoin('https://' + netloc + spliturl.path, url)
+            return url
+        else:
+            return url
+
+    def _url_is_valid(self, url):
+        try:
+            return requests.get(url, timeout=self.data['pm'].omnipkg.config['requests_timeout']).status_code < 400
+        except:
+            return False
+
+    def _get_redirected_website(self, url):
+        try:
+            response = requests.get(url, timeout=self.data['pm'].omnipkg.config['requests_timeout'])
+            if response.status_code < 400:
+                return response.url
+        except:
+            pass
+
+        return url
+    

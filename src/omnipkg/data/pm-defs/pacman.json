@@ -1,11 +1,11 @@
 {
     "name"      :   "pacman",
-    "search"    : [ "pacman -Ss {package}", "{id} {} {}\n {summary}" ],
-    "install"   :   "pacman -Syu {package}",
-    "uninstall" :   "pacman -Rsc {package}",
-    "update"    :   "pacman -Syu {package}",
+    "search"    : [ "pacman -Ss {id}", "{id} {} {}\n {summary}" ],
+    "install"   :   "pacman -Syu {id}",
+    "uninstall" :   "pacman -Rsc {id}",
+    "update"    :   "pacman -Syu {id}",
     "update-all":   "pacman -Syu",
     "installed" : [ "pacman -Q", "{id} {} {}\n {summary}" ],
     "updatable" : [ "pacman -Qu", "{id} {} {}\n {summary}" ],
-    "info"      : [ "pacman -Si {package}", "Name {}: {id} {}Description {}: {description}" ]
+    "info"      : [ "pacman -Si {id}", "Name {}: {id} {}Description {}: {description}" ]
 }

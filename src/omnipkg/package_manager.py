@@ -57,22 +57,18 @@ class PackageManager():
         return id in self.updatable_pkgs
     
     def package_exists(self, id):
-        return id in [x.id for x in self.commands['search'](package=id)]
+        return id in [x.id for x in self.commands['search'](id=id)]
     
     def run(self, cmd, package):
-        print(cmd)
         if cmd in ['install', 'uninstall']:
             self.installed_pkgs = None
         if cmd in ['install', 'uninstall', 'update', 'update-all']:
             self.updatable_pkgs = None
-        result = self.commands[cmd](package=package)
+        result = self.commands[cmd](id=package)
         if cmd == 'search':
             if self.omnipkg.config['filter_search']: 
                 result = [x for x in result if package in repr(x).lower()]
             if len(result) > self.omnipkg.config['search_results_limit']:
                 result = result[0:self.omnipkg.config['search_results_limit']-1]
         result = [Package({'pm':self, **x}) for x in result if x['id'] != 'Name']
-        if self.omnipkg.config['pre_fetch_info']:
-            for package in result:
-                package._fill_missing_info()
         return result

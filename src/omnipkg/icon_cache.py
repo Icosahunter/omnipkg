@@ -2,14 +2,15 @@ from pathlib import Path
 import requests
 import hashlib
 
+
 class IconCache:
     def __init__(self, dir):
         self.dir = Path(dir)
         self.dir.mkdir(exist_ok=True)
     
     def clear(self):
-        for file in glob.glob(str(self.dir) + '/*'):
-            os.remove(file)
+        for file in self.dir.glob('*'):
+            file.unlink(file)
     
     def get_icon(self, package):
         if 'icon_url' in package:

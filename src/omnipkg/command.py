@@ -10,6 +10,7 @@ class Command:
         self.command = cmd
         self.parser = parser
         self.privileged = privileged
+        self.requires = [x[1] for x in string.Formatter().parse(cmd) if not x[1] in [None, '']]
         if parser is not None:
             self.provides = [x[1] for x in string.Formatter().parse(parser) if not x[1] in [None, '']]
         else:

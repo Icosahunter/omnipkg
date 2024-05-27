@@ -13,10 +13,9 @@ class Omnipkg:
     def __init__(self):
         self.pms = {}
         self.config = {
-            'requests_timeout': (0.5, 5),
+            'requests_timeout': 0.5,
             'filter_search': True,
             'search_results_limit': 20,
-            'pre_fetch_info': True,
             'columns': ['icon', 'name', 'id', 'pm', 'remote', 'summary'],
             'pkg_cache_format': '.json'
         }

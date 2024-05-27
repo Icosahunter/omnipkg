@@ -1,12 +1,12 @@
 {
     "name"      :   "snap",
-    "search"    : [ "snap find {package}", "{id} {summary}\n" ],
-    "install"   :   "snap install {package}",
-    "uninstall" :   "snap remove {package}",
-    "update"    :   "snap refresh {package}",
+    "search"    : [ "snap find {id}", "{id} {summary}\n" ],
+    "install"   :   "snap install {id}",
+    "uninstall" :   "snap remove {id}",
+    "update"    :   "snap refresh {id}",
     "update-all":   "snap refresh",
     "installed" : [ "snap list", "{id} {summary}\n" ],
     "updatable" : [ "snap refresh --list", "{id} {summary}\n" ],
-    "info"      : [ "snap info --verbose {package}", "name:{:s}{id}\nsummary:{:s}{summary}\n{}:{:s}- {website:S}\nlicense:{}description: |\n{description}notes:"],
+    "info"      : [ "snap info --verbose {id}", "name:{:s}{id}\nsummary:{:s}{summary}\n{}:{:s}- {website:S}\nlicense:{}description: |\n{description}notes:"],
     "remotes"   : [ "echo Snapcraft", "{remote}\n"]
 }
