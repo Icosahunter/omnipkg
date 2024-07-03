@@ -3,7 +3,8 @@ name="flatpak"
 [[commands]]
 name="search"
 command="flatpak search --columns=name,application,description,remotes {id}"
-parser="{name}\t{id}\t{summary}\t{remote}\n" 
+parser="{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines=1
 
 [[commands]]
 name="install"
@@ -24,17 +25,20 @@ command="flatpak update"
 [[commands]]
 name="installed"
 command="flatpak list --columns=name,application,description,remotes"
-parser="{name}\t{id}\t{summary}\t{remote}\n" 
+parser="{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines=1
 
 [[commands]]
 name="updatable"
 command="flatpak remote-ls --updates --columns=name,application,description,remotes"
 parser="{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines=1
 
 [[commands]]
 name="info"
 command="flatpak search --columns=name,application,description,remotes {id}"
 parser="{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines=1
 
 [[commands]]
 name="remotes"

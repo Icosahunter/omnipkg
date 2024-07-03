@@ -13,7 +13,7 @@ class PackageManager():
         self.rev_dns = pm_def.get('rev_dns', None)
         self.name = pm_def['name']
         for x in pm_def['commands']:
-            self._add_command(x['name'], x['command'], x.get('parser', None))
+            self._add_command(x)
         self.installed_pkgs = None
         self.updatable_pkgs = None
         self.omnipkg = omnipkg_instance
@@ -22,9 +22,9 @@ class PackageManager():
     def __str__(self):
         return self.name
 
-    def _add_command(self, name, cmd, parser):
-        privileged = name in self.privileged_commands
-        self.commands[name] = Command(cmd, parser, privileged)
+    def _add_command(self, data):
+        privileged = data['name'] in self.privileged_commands
+        self.commands[data['name']] = Command(cmd=data['command'], parser=data.get('parser', None), skip_lines=data.get('skip_lines', 0), privileged=privileged)
         #if not self.hasattr(name):
         #    self.setattr(name, self.commands[name])
 
@@ -59,7 +59,7 @@ class PackageManager():
                 result = [x for x in result if package in repr(x).lower()]
             if len(result) > self.omnipkg.config['search_results_limit']:
                 result = result[0:self.omnipkg.config['search_results_limit']-1]
-        result = [Package({'pm':self, **x}) for x in result if x['id'] != 'Name']
+        result = [Package({'pm':self, **x}) for x in result]
         if self.omnipkg.config['prefetch']:
             for key in self.omnipkg.config['columns']:
                 for pkg in result:

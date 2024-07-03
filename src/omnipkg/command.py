@@ -6,11 +6,12 @@ from parse import parse
 import string
 
 class Command:
-    def __init__(self, cmd, parser=None, privileged=False):
+    def __init__(self, cmd, parser=None, privileged=False, skip_lines=0):
         self.command = cmd
         self.parser = parser
         self.privileged = privileged
         self.requires = [x[1] for x in string.Formatter().parse(cmd) if not x[1] in [None, '']]
+        self.skip_lines = skip_lines
         if parser is not None:
             self.provides = [x[1] for x in string.Formatter().parse(parser) if not x[1] in [None, '']]
         else:
@@ -41,7 +42,10 @@ class Command:
     def _parse(self, text):
         result = []
         i = 0
-        _text = text
+        if self.skip_lines > 0:
+            _text = '\n'.join(text.split('\n')[self.skip_lines:-1])
+        else:
+            _text = text
         while len(_text) > 0:
             parsed = parse(self.parser+'{end}', _text)
             if parsed is not None:

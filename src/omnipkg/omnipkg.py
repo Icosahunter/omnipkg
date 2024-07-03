@@ -56,7 +56,7 @@ class Omnipkg:
             for pm in self.pms.values():
                 results.extend(pm.run(command, package))
         else:
-            results = self.pms[pm].run(command, package)
+            results = self.pms[str(pm)].run(command, package)
         return results
     
     def index_packages(self):

@@ -53,7 +53,7 @@ class Package():
     
     def _get_remote(self):
         if 'remote' in self.data['pm'].commands['info'].provides:
-            info = self.data['pm'].commands['info'](package=self.data['id'])
+            info = self.data['pm'].commands['info'](id=self.data['id'])
             if len(info) > 0: 
                 self.data.update(info[0])
         if 'remote' not in self.data:

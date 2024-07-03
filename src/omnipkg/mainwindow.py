@@ -133,7 +133,7 @@ class MainWindow(QMainWindow):
         if omni_action.kwargs['package'] is not None:
             text += ' ' + omni_action.kwargs['package']
         if omni_action.kwargs['pm'] is not None:
-            text += ' from ' + omni_action.kwargs['pm']
+            text += ' from ' + str(omni_action.kwargs['pm'])
         text += '...'
 
         self.ui.statusbar.showMessage(text)

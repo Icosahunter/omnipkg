@@ -1,0 +1,43 @@
+"name"="brew"
+
+[[commands]]
+name="search"
+command="brew search --eval-all --desc {id}"
+parser="{id}: {summary}\n"
+skip_lines=1
+
+[[commands]]
+name="install"
+command="brew install {id}"
+
+[[commands]]
+name="uninstall"
+command="brew uninstall {id}"
+
+[[commands]]
+name="update"
+command="brew upgrade {id}"
+
+[[commands]]
+name="update-all"
+command="brew upgrade"
+
+[[commands]]
+name="installed"
+command="brew list"
+parser="{id}\n"
+
+[[commands]]
+name="updatable"
+command="brew outdated -q"
+parser="{id}\n"
+
+[[commands]]
+name="info"
+command="brew info --json  {id}"
+parser="{}\"name\": \"{id}\"{}\"tap\": \"{remote}\"{}\"desc\": \"{summary}\"{}\"homepage\": \"{website}\"{}"
+
+[[commands]]
+name="remotes"
+command="echo homebrew/core; brew tap"
+parser="{remote}\n"

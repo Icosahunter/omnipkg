@@ -46,26 +46,18 @@ class SerDir:
             path_part = path_part.parent
         
         relpath = (self.dir / key).relative_to(path_part)
-        filename = ''
 
-        if len(relpath.parts) == 1:
-            filename = relpath.name
-        else:
-            filename = relpath.parents[-2].name
+        if len(relpath.parts) > 0:
+            filename = relpath.parts[0]
+            if not (path_part / filename).is_file():
+                files = [x for x in path_part.iterdir() if x.stem == filename]
 
-        if not (path_part / filename).is_file():
-            files = [x for x in path_part.iterdir() if x.stem == filename]
-
-            if len(files) > 0:
-                filename = files[0].name
-            else:
-                filename = None
-        
-        if filename:
+                if len(files) > 0:
+                    filename = files[0].name
+                else:
+                    return None
+                
             path_part = (path_part / filename)
-
-        print(str(self.dir / key))
-        print(str(path_part.parent / path_part.stem))
 
         key_part = str((self.dir / key).relative_to(path_part.parent / path_part.stem))
 
@@ -73,6 +65,8 @@ class SerDir:
 
     def __getitem__(self, key):
         sk = self.split_key(key)
+        if sk == None:
+            raise KeyError(key)
         if sk[1] == '.' and sk[0].is_dir():
             return SerDir(sk[0])
         else:
