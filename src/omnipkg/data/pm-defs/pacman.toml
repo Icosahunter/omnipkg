@@ -1,0 +1,37 @@
+name="pacman"
+
+[[commands]]
+name="search"
+command="pacman -Ss {id}"
+parser="{id} {} {}\n {summary}"
+
+[[commands]]
+name="install"
+command="pacman -Syu {id}"
+
+[[commands]]
+name="uninstall"
+command="pacman -Rsc {id}"
+
+[[commands]]
+name="update"
+command="pacman -Syu {id}"
+
+[[commands]]
+name="update-all"
+command="pacman -Syu"
+
+[[commands]]
+name="installed"
+command="pacman -Q"
+parser="{id} {} {}\n {summary}"
+
+[[commands]]
+name="updatable"
+command="pacman -Qu"
+parser="{id} {} {}\n {summary}"
+
+[[commands]]
+name="info"
+command="pacman -Si {id}"
+parser="Name {}: {id} {}Description {}: {description}"

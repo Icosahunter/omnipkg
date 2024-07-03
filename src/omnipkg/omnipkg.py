@@ -17,7 +17,11 @@ class Omnipkg:
             'filter_search': True,
             'search_results_limit': 20,
             'columns': ['icon', 'name', 'id', 'pm', 'remote', 'summary'],
-            'pkg_cache_format': '.json'
+            'pkg_cache_format': '.json',
+            'prefetch': True,
+            'categories': ['Audio', 'Video', 'Development', 'Education', 'Game', 'Graphics', 'Network', 'Office', 'Utilities'],
+            'category_keywords': {},
+            'category_icons': {}
         }
         self.pkg_cache = SerDir(dirs.pkg_cache_dir, self.config['pkg_cache_format'])
         self.icon_cache = IconCache(dirs.icon_cache_dir)
@@ -35,18 +39,16 @@ class Omnipkg:
         dirs.icon_cache_dir.mkdir(exist_ok=True)
     
     def _load_pms(self):
-        for path in dirs.pm_defs_dir.glob('*'):
-            with open(path) as f:
-                pm_def = json.load(f)
+        #for path in dirs.pm_defs_dir.glob('*'):
+        #    with open(path) as f:
+        #        pm_def = json.load(f)
+        #        if shutil.which(pm_def['name']):
+        #            self.pms[pm_def['name']] = (PackageManager(pm_def, self))
+
+        for pm_def in SerDir(dirs.installed_dir / 'data/pm-defs').values():
+            if not pm_def['name'] in self.pms:
                 if shutil.which(pm_def['name']):
                     self.pms[pm_def['name']] = (PackageManager(pm_def, self))
-
-        for path in (dirs.installed_dir / 'data/pm-defs').glob('*'):
-            with open(path) as f:
-                pm_def = json.load(f)
-                if not pm_def['name'] in self.pms:
-                    if shutil.which(pm_def['name']):
-                        self.pms[pm_def['name']] = (PackageManager(pm_def, self))
     
     def run(self, command, package=None, pm=None, **kwargs):
         results = []

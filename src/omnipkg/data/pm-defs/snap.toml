@@ -1,0 +1,47 @@
+name="snap"
+
+[[commands]]
+name="search"
+command="snap find {id}"
+parser="{id} {summary}\n"
+
+[[commands]]
+name="install"
+command="snap install {id}"
+
+[[commands]]
+name="uninstall"
+command="snap remove {id}"
+
+[[commands]]
+name="update"
+command="snap refresh {id}"
+
+[[commands]]
+name="update-all"
+command="snap refresh"
+
+[[commands]]
+name="installed"
+command="snap list"
+parser="{id} {summary}\n"
+
+[[commands]]
+name="updatable"
+command="snap refresh --list"
+parser="{id} {summary}\n"
+
+[[commands]]
+name="info"
+command="snap info --verbose {id}"
+parser="name:{:s}{id}\nsummary:{:s}{summary}\n{}:{:s}- {website:S}\nlicense:{}description: |\n{description}notes:"
+
+[[commands]]
+name="remotes"
+command="echo Snapcraft"
+parser="{remote}\n"
+
+[[commands]]
+name="search-section"
+command="snap find --section={id}"
+parser="{id} {summary}\n"

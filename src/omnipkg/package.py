@@ -63,15 +63,12 @@ class Package():
             self.data['remote'] = 'default'
     
     def _fill_missing_info(self, key):
-
         if key in self.data:
             return True
 
-        if not self._loaded and self.data['omnipkg_id'] in self.data['pm'].omnipkg.pkg_cache:
-            self.data.update(**{k:v for k,v in self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']].items() if k != 'pm'})
-            self._loaded = True
-            if key in self.data:
-                return True
+        self.load()
+        if key in self.data:
+            return True
 
         commands = [x for x in self.data['pm'].commands.values() if key in x.provides]
         if len(commands) > 0:
@@ -81,6 +78,7 @@ class Package():
                 if 'website' in results[0]:
                     self.data['website'] = self._get_redirected_website(self.data['website'])
                 if key in self.data:
+                    self.save()
                     return True
         
         if key == 'name':
@@ -93,14 +91,22 @@ class Package():
             self._website_to_icon_url()
         if key == 'icon' and self._fill_missing_info('icon_url'):
             self.data['icon'] = self.data['pm'].omnipkg.icon_cache.get_icon(self)
+        self.save()
         if key in self.data:
             return True
         else:
             return False
+    
+    def save(self):
+        self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']] = self.data
+
+    def load(self):
+        if not self._loaded and self.data['omnipkg_id'] in self.data['pm'].omnipkg.pkg_cache:
+            self.data.update(**{k:v for k,v in self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']].items() if k != 'pm'})
+            self._loaded = True
 
     def _website_to_icon_url(self):
         spliturl = urlsplit(self.data['website'])
-        
         if spliturl.netloc == 'github.com' and spliturl.path != '/':
             self._icon_url_from_github()
         else:
@@ -108,14 +114,16 @@ class Package():
                 icon_url = self.data['website'] + '/favicon.ico'
                 if self._url_is_valid(icon_url):
                     self.data['icon_url'] = icon_url
+                    return None
             except:
-                try:
-                    html = requests.get(self.data['website'], allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout']).text
-                    tree = etree.fromstring(html, etree.HTMLParser())
-                    icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
-                    self.data['icon_url'] = self._fix_relative_url(self.data['website'], icon_url)
-                except:
-                    pass
+                pass
+            try:
+                html = requests.get(self.data['website'], allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout']).text
+                tree = etree.fromstring(html, etree.HTMLParser())
+                icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
+                self.data['icon_url'] = self._fix_relative_url(self.data['website'], icon_url)
+            except:
+                pass
 
     def _icon_url_from_github(self):
         url_path = urlsplit(self.data['website']).path

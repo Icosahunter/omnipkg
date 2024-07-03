@@ -6,7 +6,7 @@ OmniPkg is still in development. It is not itself packaged for any distros and i
 
 # Features
  - Access basic functions of all your package managers from one application
- - Add new package managers with simple JSON files
+ - Add new package managers with simple config files (default is TOML but Omnipkg should recognize JSON and INI files as well)
 
 # Using It
 
@@ -65,4 +65,3 @@ Installing Omnipkg:
  - Add support for Apt package manager
  - Polish GUI
  - Add advanced configuration/settings
- - Redo pm-def format

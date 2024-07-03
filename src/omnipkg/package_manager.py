@@ -10,14 +10,10 @@ class PackageManager():
     def __init__(self, pm_def, omnipkg_instance):
         self.commands = {}
         self.privileged_commands = [ 'install', 'uninstall', 'update', 'update_all' ]
-        self.rev_dns = None
-        for k, v in pm_def.items():
-            if k=='name':
-                self.name = v
-            elif k=='rev-dns':
-                self.rev_dns = v
-            else:
-                self._add_command(k, v)
+        self.rev_dns = pm_def.get('rev_dns', None)
+        self.name = pm_def['name']
+        for x in pm_def['commands']:
+            self._add_command(x['name'], x['command'], x.get('parser', None))
         self.installed_pkgs = None
         self.updatable_pkgs = None
         self.omnipkg = omnipkg_instance
@@ -26,15 +22,8 @@ class PackageManager():
     def __str__(self):
         return self.name
 
-    def _add_command(self, name, data):
-        cmd = None
-        parser = None
+    def _add_command(self, name, cmd, parser):
         privileged = name in self.privileged_commands
-        if type(data) is list:
-            cmd = data[0]
-            parser = data[1]
-        else:
-            cmd = data
         self.commands[name] = Command(cmd, parser, privileged)
         #if not self.hasattr(name):
         #    self.setattr(name, self.commands[name])
@@ -71,4 +60,10 @@ class PackageManager():
             if len(result) > self.omnipkg.config['search_results_limit']:
                 result = result[0:self.omnipkg.config['search_results_limit']-1]
         result = [Package({'pm':self, **x}) for x in result if x['id'] != 'Name']
+        if self.omnipkg.config['prefetch']:
+            for key in self.omnipkg.config['columns']:
+                for pkg in result:
+                    pkg._fill_missing_info(key)
+        #if self.omnipkg.config['prefetch_details_info']:
+        #    for key in [x[1] for x in string.Formatter().parse(self.omnipkg.config[]) if not x[1] in [None, '']]
         return result
