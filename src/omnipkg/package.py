@@ -104,6 +104,7 @@ class Package():
         if not self._loaded and self.data['omnipkg_id'] in self.data['pm'].omnipkg.pkg_cache:
             self.data.update(**{k:v for k,v in self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']].items() if k != 'pm'})
             self._loaded = True
+            print('egg')
 
     def _website_to_icon_url(self):
         spliturl = urlsplit(self.data['website'])

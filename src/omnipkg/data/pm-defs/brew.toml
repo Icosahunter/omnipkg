@@ -2,25 +2,29 @@
 
 [[commands]]
 name="search"
-command="brew search --eval-all --desc {id}"
+command="brew desc -s --eval-all {id}"
 parser="{id}: {summary}\n"
 skip_lines=1
 
 [[commands]]
 name="install"
 command="brew install {id}"
+privileged=false
 
 [[commands]]
 name="uninstall"
 command="brew uninstall {id}"
+privileged=false
 
 [[commands]]
 name="update"
 command="brew upgrade {id}"
+privileged=false
 
 [[commands]]
 name="update-all"
 command="brew upgrade"
+privileged=false
 
 [[commands]]
 name="installed"

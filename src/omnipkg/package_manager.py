@@ -23,7 +23,7 @@ class PackageManager():
         return self.name
 
     def _add_command(self, data):
-        privileged = data['name'] in self.privileged_commands
+        privileged = data.get('privileged', data['name'] in self.privileged_commands)
         self.commands[data['name']] = Command(cmd=data['command'], parser=data.get('parser', None), skip_lines=data.get('skip_lines', 0), privileged=privileged)
         #if not self.hasattr(name):
         #    self.setattr(name, self.commands[name])
