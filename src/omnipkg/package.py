@@ -11,19 +11,19 @@ class Package():
             self._get_remote()
         self.data['omnipkg_id'] = '{pm}/{remote}/{id}'.format(**self.data)
         self._loaded = False
-        
+
     def update(self, data):
         self.data.update(data)
-    
+
     def keys(self):
         return self.data.keys()
-    
+
     def values(self):
         return self.data.values()
-    
+
     def items(self):
         return self.data.items()
-    
+
     def __str__(self):
         return self.data['id']
 
@@ -41,7 +41,7 @@ class Package():
         if key in self.data:
             return self.data[key]
         return None
-    
+
     def __contains__(self, key):
         if key in self.data:
             return True
@@ -50,18 +50,18 @@ class Package():
             if key in self.data:
                 return True
         return False
-    
+
     def _get_remote(self):
         if 'remote' in self.data['pm'].commands['info'].provides:
             info = self.data['pm'].commands['info'](id=self.data['id'])
-            if len(info) > 0: 
+            if len(info) > 0:
                 self.data.update(info[0])
         if 'remote' not in self.data:
             if len(self.data['pm'].remotes) == 1:
                 self.data['remote'] = self.data['pm'].remotes[0]
         if 'remote' not in self.data:
             self.data['remote'] = 'default'
-    
+
     def _fill_missing_info(self, key):
         if key in self.data:
             return True
@@ -80,7 +80,7 @@ class Package():
                 if key in self.data:
                     self.save()
                     return True
-        
+
         if key == 'name':
             self._id_to_name()
         if key == 'description' and self._fill_missing_info('summary'):
@@ -96,7 +96,7 @@ class Package():
             return True
         else:
             return False
-    
+
     def save(self):
         self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']] = self.data
 
@@ -104,7 +104,6 @@ class Package():
         if not self._loaded and self.data['omnipkg_id'] in self.data['pm'].omnipkg.pkg_cache:
             self.data.update(**{k:v for k,v in self.data['pm'].omnipkg.pkg_cache[self.data['omnipkg_id']].items() if k != 'pm'})
             self._loaded = True
-            print('egg')
 
     def _website_to_icon_url(self):
         spliturl = urlsplit(self.data['website'])
@@ -140,7 +139,7 @@ class Package():
                     self.data['icon_url'] = icon_url
         except:
             pass
-        
+
         #html = requests.get(self.data['website'], allow_redirects=True).text
         #tree = etree.fromstring(html, etree.HTMLParser())
         #with open('./test.html', 'w+') as f:
@@ -163,7 +162,7 @@ class Package():
 
     def _id_to_name(self):
         name = self.data['id']
-        
+
         if self.data['pm'].rev_dns:
             name = name.split('.')[-1]
         else:
@@ -174,7 +173,7 @@ class Package():
             elif '.' in self.data['id']:
                 name = name.replace('.', ' ')
             name = name.title()
-        
+
         self.data['name'] = name
 
     def _fix_relative_url(self, base_url, relative_url):
@@ -184,7 +183,7 @@ class Package():
             netloc = spliturl.netloc
             if netloc.startswith('www.'):
                 netloc = netloc[4:]
-            
+
             url = urljoin('https://' + netloc + spliturl.path, url)
             return url
         else:
@@ -205,4 +204,3 @@ class Package():
             pass
 
         return url
-    
