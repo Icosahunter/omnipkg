@@ -7,9 +7,7 @@ class Package():
 
     def __init__(self, data):
         self.data = data
-        if 'remote' not in self.data:
-            self._get_remote()
-        self.data['omnipkg_id'] = '{pm}/{remote}/{id}'.format(**self.data)
+        self.data['omnipkg_id'] = '{pm}/{id}'.format(**self.data)
         self._loaded = False
 
     def update(self, data):
@@ -51,20 +49,12 @@ class Package():
                 return True
         return False
 
-    def _get_remote(self):
-        if 'remote' in self.data['pm'].commands['info'].provides:
-            info = self.data['pm'].commands['info'](id=self.data['id'])
-            if len(info) > 0:
-                self.data.update(info[0])
-        if 'remote' not in self.data:
-            if len(self.data['pm'].remotes) == 1:
-                self.data['remote'] = self.data['pm'].remotes[0]
-        if 'remote' not in self.data:
-            self.data['remote'] = 'default'
-
     def _fill_missing_info(self, key):
+
         if key in self.data:
             return True
+        elif self._loaded:
+            return False
 
         self.load()
         if key in self.data:
@@ -72,7 +62,7 @@ class Package():
 
         commands = [x for x in self.data['pm'].commands.values() if key in x.provides]
         if len(commands) > 0:
-            results = commands[0](id=self.data['id'], remote=self.data['remote'])
+            results = commands[0](id=self.data['id'])
             if len(results) > 0:
                 self.data.update(results[0])
                 if 'website' in results[0]:
@@ -108,26 +98,39 @@ class Package():
     def _website_to_icon_url(self):
         spliturl = urlsplit(self.data['website'])
         if spliturl.netloc == 'github.com' and spliturl.path != '/':
-            self._icon_url_from_github()
+            self.data['icon_url'] = self._get_icon_from_github_page(self.data['website'])
         else:
-            try:
-                icon_url = self.data['website'] + '/favicon.ico'
-                if self._url_is_valid(icon_url):
-                    self.data['icon_url'] = icon_url
-                    return None
-            except:
-                pass
-            try:
-                html = requests.get(self.data['website'], allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout']).text
-                tree = etree.fromstring(html, etree.HTMLParser())
-                icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
-                self.data['icon_url'] = self._fix_relative_url(self.data['website'], icon_url)
-            except:
-                pass
+            self.data['icon_url'] = self._get_favicon(self.data['website'])
 
-    def _icon_url_from_github(self):
-        url_path = urlsplit(self.data['website']).path
+    def _get_favicon(self, website):
+        try:
+            icon_url = website + '/favicon.ico'
+            if self._url_is_valid(icon_url):
+                return icon_url
+        except:
+            pass
+        try:
+            spliturl = urlsplit(website)
+            icon_url = spliturl.scheme + '://' + spliturl.netloc + '/favicon.ico'
+            print(icon_url)
+            if self._url_is_valid(icon_url):
+                return icon_url
+        except:
+            pass
+        try:
+            html = requests.get(self.data['website'], allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout']).text
+            tree = etree.fromstring(html, etree.HTMLParser())
+            icon_url = tree.xpath('//link[contains(@rel, "icon")]/@href')[0]
+            return self._fix_relative_url(self.data['website'], icon_url)
+        except:
+            pass
+
+        return None
+
+    def _get_icon_from_github_page(self, repo_url):
+        url_path = urlsplit(repo_url).path
         name_keywords = '|'.join(self.data['name'].lower().split(' '))
+        print(name_keywords)
         readme_re = f'(?:"|\'|\()((?!.*(shields|backer|badge|indicator|status|build|screenshot).*)(\w|[/\.:-~])*/\S*(icon|logo|{name_keywords})\S*\.(png|jpg|svg|ico))'
         try:
             for branch in ['master', 'main']:
@@ -136,9 +139,9 @@ class Package():
                 if response.status_code < 400:
                     icon_url = re.compile(readme_re, re.IGNORECASE).search(response.text).group(1)
                     icon_url = self._fix_relative_url(f'https://github.com{url_path}/raw/{branch}/', icon_url)
-                    self.data['icon_url'] = icon_url
+                    return icon_url
         except:
-            pass
+            return None
 
         #html = requests.get(self.data['website'], allow_redirects=True).text
         #tree = etree.fromstring(html, etree.HTMLParser())

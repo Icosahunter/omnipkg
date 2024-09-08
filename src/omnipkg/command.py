@@ -17,7 +17,7 @@ class Command:
         else:
             self.provides = []
         #self.thread
-    
+
     def __str__(self):
         return self.command
 
@@ -28,7 +28,7 @@ class Command:
         if self.privileged and platform.system() == 'Linux':
             cmd = 'pkexec ' + cmd
         return self._run(cmd)
-    
+
     def _run(self, cmd):
         capture_output = self.parser is not None
         print(cmd)
@@ -38,7 +38,7 @@ class Command:
         else:
             result = ''
         return self._parse(result)
-    
+
     def _parse(self, text):
         result = []
         i = 0

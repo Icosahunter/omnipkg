@@ -1,46 +1,41 @@
-name="flatpak"
+name = "flatpak"
 
 [[commands]]
-name="search"
-command="flatpak search --columns=name,application,description,remotes {id}"
-parser="{name}\t{id}\t{summary}\t{remote}\n"
-skip_lines=1
+name = "search"
+command = "flatpak search --columns=name,application,description,remotes {id}"
+parser = "{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines = 1
 
 [[commands]]
-name="install"
-command="flatpak install -y {id}"
+name = "install"
+command = "flatpak install -y {id}"
 
 [[commands]]
-name="uninstall"
-command="flatpak remove -y {id}"
+name = "uninstall"
+command = "flatpak remove -y {id}"
 
 [[commands]]
-name="update"
-command="flatpak update {id}"
+name = "update"
+command = "flatpak update {id}"
 
 [[commands]]
-name="update-all"
-command="flatpak update"
+name = "update-all"
+command = "flatpak update"
 
 [[commands]]
-name="installed"
-command="flatpak list --columns=name,application,description,remotes"
-parser="{name}\t{id}\t{summary}\t{remote}\n"
-skip_lines=1
+name = "installed"
+command = "flatpak list --columns=name,application,description,remotes"
+parser = "{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines = 1
 
 [[commands]]
-name="updatable"
-command="flatpak remote-ls --updates --columns=name,application,description,remotes"
-parser="{name}\t{id}\t{summary}\t{remote}\n"
-skip_lines=1
+name = "updatable"
+command = "flatpak remote-ls --updates --columns=name,application,description,remotes"
+parser = "{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines = 1
 
 [[commands]]
-name="info"
-command="flatpak search --columns=name,application,description,remotes {id}"
-parser="{name}\t{id}\t{summary}\t{remote}\n"
-skip_lines=1
-
-[[commands]]
-name="remotes"
-command="flatpak remotes --columns=name,url"
-parser="{remote}\t{remote_url}\n"
+name = "info"
+command = "flatpak search --columns=name,application,description,remotes {id}"
+parser = "{name}\t{id}\t{summary}\t{remote}\n"
+skip_lines = 1

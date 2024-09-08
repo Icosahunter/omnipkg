@@ -7,13 +7,13 @@ class IconCache:
     def __init__(self, dir):
         self.dir = Path(dir)
         self.dir.mkdir(exist_ok=True)
-    
+
     def clear(self):
         for file in self.dir.glob('*'):
             file.unlink(file)
-    
+
     def get_icon(self, package):
-        if 'icon_url' in package:
+        if 'icon_url' in package and package['icon_url'] is not None:
             icon_file = self.md5(package['icon_url'])
             if not (self.dir / icon_file).exists():
                 try:

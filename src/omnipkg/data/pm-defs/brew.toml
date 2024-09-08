@@ -1,47 +1,42 @@
-"name"="brew"
+"name" = "brew"
 
 [[commands]]
-name="search"
-command="brew desc -s --eval-all {id}"
-parser="{id}: {summary}\n"
-skip_lines=1
+name = "search"
+command = "brew desc -s --eval-all {id}"
+parser = "{id}: {summary}\n"
+skip_lines = 1
 
 [[commands]]
-name="install"
-command="brew install {id}"
-privileged=false
+name = "install"
+command = "brew install {id}"
+privileged = false
 
 [[commands]]
-name="uninstall"
-command="brew uninstall {id}"
-privileged=false
+name = "uninstall"
+command = "brew uninstall {id}"
+privileged = false
 
 [[commands]]
-name="update"
-command="brew upgrade {id}"
-privileged=false
+name = "update"
+command = "brew upgrade {id}"
+privileged = false
 
 [[commands]]
-name="update-all"
-command="brew upgrade"
-privileged=false
+name = "update-all"
+command = "brew upgrade"
+privileged = false
 
 [[commands]]
-name="installed"
-command="brew list"
-parser="{id}\n"
+name = "installed"
+command = "brew list"
+parser = "{id}\n"
 
 [[commands]]
-name="updatable"
-command="brew outdated -q"
-parser="{id}\n"
+name = "updatable"
+command = "brew outdated -q"
+parser = "{id}\n"
 
 [[commands]]
-name="info"
-command="brew info --json  {id}"
-parser="{}\"name\": \"{id}\"{}\"tap\": \"{remote}\"{}\"desc\": \"{summary}\"{}\"homepage\": \"{website}\"{}"
-
-[[commands]]
-name="remotes"
-command="echo homebrew/core; brew tap"
-parser="{remote}\n"
+name = "info"
+command = "brew info --json  {id}"
+parser = "{}\"name\": \"{id}\"{}\"tap\": \"{remote}\"{}\"desc\": \"{summary}\"{}\"homepage\": \"{website}\"{}"

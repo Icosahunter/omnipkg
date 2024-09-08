@@ -1,42 +1,37 @@
-"name"="eopkg"
+"name" = "eopkg"
 
 [[commands]]
-name="search"
-command="eopkg sr -N {id}"
-parser="{id} {}- {summary}\n"
+name = "search"
+command = "eopkg sr -N {id}"
+parser = "{id} {}- {summary}\n"
 
 [[commands]]
-name="install"
-command="eopkg it -y -r {remote} {id}"
+name = "install"
+command = "eopkg it -y -r {remote} {id}"
 
 [[commands]]
-name="uninstall"
-command="eopkg rm {id}"
+name = "uninstall"
+command = "eopkg rm {id}"
 
 [[commands]]
-name="update"
-command="eopkg up -y {id}"
+name = "update"
+command = "eopkg up -y {id}"
 
 [[commands]]
-name="update-all"
-command="eopkg up"
+name = "update-all"
+command = "eopkg up"
 
 [[commands]]
-name="installed"
-command="eopkg li -N"
-parser="{id} {}- {summary}\n"
+name = "installed"
+command = "eopkg li -N"
+parser = "{id} {}- {summary}\n"
 
 [[commands]]
-name="updatable"
-command="eopkg lu -N"
-parser="{id} {}- {summary}\n"
+name = "updatable"
+command = "eopkg lu -N"
+parser = "{id} {}- {summary}\n"
 
 [[commands]]
-name="info"
-command="eopkg info -N --xml {id}"
-parser="{}<Name>{id}</Name>{}<Summary xml:lang=\"en\">{summary}</Summary>{}<Description xml:lang=\"en\">{description}</Description>{}<Homepage>{website}</Homepage>{}"
-
-[[commands]]
-name="remotes"
-command="eopkg lr -N"
-parser="{remote} [{}]\n{remote_url}\n"
+name = "info"
+command = "eopkg info -N --xml {id}"
+parser = "{}<Name>{id}</Name>{}<Summary xml:lang=\"en\">{summary}</Summary>{}<Description xml:lang=\"en\">{description}</Description>{}<Homepage>{website}</Homepage>{}"

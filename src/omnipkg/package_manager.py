@@ -17,8 +17,7 @@ class PackageManager():
         self.installed_pkgs = None
         self.updatable_pkgs = None
         self.omnipkg = omnipkg_instance
-        self.remotes = [x['remote'] for x in self.commands['remotes']()]
-    
+
     def __str__(self):
         return self.name
 
@@ -39,15 +38,15 @@ class PackageManager():
         if self.installed_pkgs == None:
             self.installed_pkgs = [x['id'] for x in self.commands['installed']()]
         return id in self.installed_pkgs
-    
+
     def package_updatable(self, id):
         if self.updatable_pkgs == None:
             self.updatable_pkgs = [x['id'] for x in self.commands['updatable']()]
         return id in self.updatable_pkgs
-    
+
     def package_exists(self, id):
         return id in [x.id for x in self.commands['search'](id=id)]
-    
+
     def run(self, cmd, package):
         if cmd in ['install', 'uninstall']:
             self.installed_pkgs = None
@@ -55,7 +54,7 @@ class PackageManager():
             self.updatable_pkgs = None
         result = self.commands[cmd](id=package)
         if cmd == 'search':
-            if self.omnipkg.config['filter_search']: 
+            if self.omnipkg.config['filter_search']:
                 result = [x for x in result if package in repr(x).lower()]
             if len(result) > self.omnipkg.config['search_results_limit']:
                 result = result[0:self.omnipkg.config['search_results_limit']-1]
