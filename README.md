@@ -59,6 +59,7 @@ Installing Omnipkg:
  - Eopkg
  - Flatpak
  - Snap
+ - Homebrew (Mac & Linux)
  - Pacman (untested, this will likely require some new features for detecting user input prompts)
 
  # TODO
