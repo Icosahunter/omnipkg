@@ -18,7 +18,7 @@
     <item>
      <widget class="QSplitter" name="splitter">
       <property name="orientation">
-       <enum>Qt::Horizontal</enum>
+       <enum>Qt::Orientation::Horizontal</enum>
       </property>
       <widget class="QWidget" name="widget" native="true">
        <layout class="QVBoxLayout" name="verticalLayout">
@@ -109,7 +109,7 @@
           <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -182,14 +182,15 @@
     <addaction name="clearPackageIndexesAction"/>
     <addaction name="indexPackagesAction"/>
    </widget>
-   <widget class="QMenu" name="menuView">
+   <widget class="QMenu" name="menuconfig">
     <property name="title">
-     <string>View</string>
+     <string>Config</string>
     </property>
-    <addaction name="columnsAction"/>
+    <addaction name="openConfigAction"/>
+    <addaction name="resetConfigAction"/>
    </widget>
    <addaction name="menucache"/>
-   <addaction name="menuView"/>
+   <addaction name="menuconfig"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <action name="indexPackagesAction">
@@ -210,6 +211,21 @@
   <action name="columnsAction">
    <property name="text">
     <string>Columns</string>
+   </property>
+  </action>
+  <action name="openConfigAction">
+   <property name="text">
+    <string>Open Config</string>
+   </property>
+  </action>
+  <action name="resetPMDefinitionsAction">
+   <property name="text">
+    <string>Reset PM Definitions</string>
+   </property>
+  </action>
+  <action name="resetConfigAction">
+   <property name="text">
+    <string>Reset Config</string>
    </property>
   </action>
  </widget>

@@ -1,0 +1,54 @@
+[audio]
+name = 'Music & Audio'
+icon = 'audio.png'
+keywords = ['audio', 'midi', 'music', 'sound', 'jack', 'alsa', 'effects', 'musescore', 'playback', 'notation', 'sequencer', 'dj', 'mp3', 'mixer', 'standalone', 'wav', 'ogg', 'synthesizer', 'instrument', 'flac', 'sounds', 'lyrics', 'instruments', 'piano', 'tags', 'playlists', 'recording', 'sheet', 'cd', 'session', 'record', 'effect', 'tracker', 'musical', 'mixxx', 'dynamics', 'controls', 'pulseaudio', 'state', 'reverb', 'stereo', 'songs', 'aac', 'voices', 'musicxml', 'wave', 'staves', 'articulations', 'lead', 'musescoreorg', 'repeats', 'markings', 'signatures', 'delay', 'pipewire', 'drumstick', 'pitch', 'kit', 'controllers', 'rhythm', 'tag', 'together', 'ambisonic', 'ambisonics', 'lilypond', 'recorder', 'rme', 'listen', 'wavpack', 'additive', 'iem', 'institute', 'acoustics', 'graz', 'austria', 'higherorder', '7th', 'encoders', 'directional', 'compressors', 'directivity', 'shapers', 'waveform', 'percussion', 'featured', 'multitrack', 'song', 'drum', 'mixes', 'traktor', 'synthesis', 'soundfont', 'defined', 'soundcards', 'picard', 'scores', 'sample', 'streaming', 'oss', 'replaygain']
+
+[education]
+name = 'Education & Reading'
+icon = 'education.png'
+keywords = ['learning', 'activities', 'sugar', 'bible', 'study', 'children', 'educational', 'words', 'english', 'learner', 'vocabulary', 'lookup', 'trainer', 'bibliography', 'education', 'bibtex', 'training', 'letters', 'correct', 'expressions', 'downloaded', 'flash', 'dictionaries', 'later', 'anki', 'division', 'generator', 'bibletime', 'bibliographies', 'xmlxslt', 'exercise', 'article', 'ground', 'collaborative', 'learners', 'teaching', 'capable', 'reference', 'expeyes', 'stars', 'foreign', 'remember', 'alphabet']
+
+[utilities]
+name = 'Utilities'
+icon = 'utilities.png'
+keywords = ['files', 'text', 'archive', 'notes', 'archives', 'backup', 'encrypted', 'password', 'zip', 'compressed', 'clipboard', 'keys', 'type', 'passwords', 'log', 'recipes', 'debian', 'write', 'copy', 'characters', 'binary', 'gzip', 'xz', 'stopwatch', 'stored', 'modify', 'bzip2', 'task', 'taking', 'screenshot', 'saved', 'logs', 'tar', 'helps', 'synchronization', 'rar', '7z', 'spell', 'checking', 'conversion', 'bzip', 'capture', 'easytouse', 'temperature', 'recognition', 'required', 'compress', 'area', 'unicode', 'backups', 'kernel', 'info']
+
+[games]
+name = 'Games'
+icon = 'games.png'
+keywords = ['puzzle', 'game', 'games', 'play', 'sliding', 'player', 'square', 'network', 'block', 'latin', 'original', 'players', 'number', 'engine', 'computer', 'classic', 'board', 'source', 'cube', 'emulator', 'pattern', 'black', 'solitaire', 'multiplayer', 'polyomino', 'loopdrawing', 'toroidal', 'rectangles', 'popular', 'chess', 'levels', 'world', 'strategy', 'grid', 'tile', 'portable', 'level', 'version', 'collection', 'map', 'range', 'mines', 'was', 'light', 'goal', 'single', 'move', 'tracks', 'adventure', 'jigsaw', 'space', 'placing', 'rolling', 'peg', 'track', 'arcade', 'white', 'filling', 'blocks', 'pegs', 'guess', 'box', 'tiles', 'doom', 'rotational', 'undead', 'flip', 'graph', 'placement', 'simon', 'bridges', 'towers', 'arithmetic', 'clone', 'gridfilling', 'net', 'ballfinding', 'bridgeplacing', 'domino', 'tiling', 'inversion', 'symmetric', 'combinationguessing', 'gemcollecting', 'lightbulb', 'magnetplacing', 'mapcolouring', 'minefinding', 'visibledistance', 'blockclearing', 'squareconnecting', 'numberremoving', 'mazedrawing', 'tentplacing', 'towerplacing', 'monsterplacing', 'planar', 'layout', 'gameplay', 'action']
+
+[development]
+name = 'Development'
+icon = 'development.png'
+keywords = ['development', 'ide', 'programming', 'git', 'developers', 'debugging', 'sql', 'documentation', 'debugger', 'php', 'sqlite', 'auto', 'databases', 'visual', 'class', 'dbus', 'completion', 'kdevelop', 'lazarus', 'forms', 'test', 'compiler', 'native', 'pascal', 'inside', 'node', 'develop', 'variables', 'performance', 'translation', 'tables', 'editors', 'architecture', 'replace', 'merge', 'xterm', 'repositories', 'inspect', 'multiplatform', 'ui', 'bluefish', 'production', 'designer', 'upnp', 'folding', 'widget', 'records', 'builder', 'glade', 'customize', 'object', 'programmers', 'statements', 'define', 'component', 'universal']
+
+[office]
+name = 'Office'
+icon = 'office.png'
+keywords = ['email', 'browser', 'mail', 'web', 'latex', 'document', 'personal', 'calendar', 'contacts', 'accounts', 'libreoffice', 'address', 'book', 'exchange', 'writing', 'productivity', 'processor', 'events', 'microsoft', 'focus', 'vivaldi', 'ebook', 'page', 'markdown', 'evolution', 'office', 'reports', 'imap', 'intuitive', 'korganizer', 'kaddressbook', 'merkuro', 'filtering', 'account', 'integrate', 'calendaring', 'accounting', 'kontact', 'contact', 'values', 'bookmarks', 'google', 'then', 'presentation', 'kmail', 'presentations', 'todo', 'kraft', 'tex', 'ease', 'plain', 'handle', 'style', 'attachments', 'ldap', 'lyx']
+
+[social]
+name = 'Social Media & Messaging'
+icon = 'social.png'
+keywords = ['chat', 'irc', 'messaging', 'xmpp', 'chats', 'distributed', 'telegram', 'securely', 'group', 'channels', 'endtoend', 'talk', 'omemo', 'calls', 'openpgp', 'join', 'transmission', 'private', 'im', 'emotes', 'found', 'communicate', 'torrents', 'syncthing', 'tox', 'providing', 'communications', 'ip', 'sending', 'downloads', 'ads', 'central', 'social', 'ssl', 'websites', 'profile', 'discovery', 'nodes', 'synchronizes', 'receive', 'miss', 'macos', 'android', 'soulseek', 'rss', 'gajim', 'fullyfeatured', 'itaposs', 'combination', 'launch', 'dino', 'reliable', 'ricochet', 'direct', 'downloading', 'proton', 'synchronized', 'favorite', 'checks', 'peertopeer']
+
+[stem]
+name = 'STEM'
+icon = 'stem.png'
+keywords = ['data', 'analysis', 'radio', 'interactive', 'visualization', 'simulation', 'elements', 'spectra', 'visualize', 'sequence', 'structures', 'fitting', 'xray', 'mathematical', 'output', 'graphs', 'simulator', 'amateur', 'plots', 'pymca', 'pspp', 'astronomical', 'element', 'modeling', 'statistical', 'sets', 'spec', 'scilab', 'parameters', 'numerical', 'plotting', 'assembly', 'microscopy', 'circuit', 'datasets', 'schematic', 'edf', 'navigation', 'periodic', 'field', 'linear', 'explore', 'circuits', 'atomic', 'analyze', 'chemical', 'algorithms', 'fluorescence', 'r', 'mass', 'peaks', 'calculations', 'esrf', 'chemistry', 'simulations', 'analyse', 'hdf5', 'sequences', 'peak', 'fits', '1', 'grads', 'spm', 'future', 'manual', 'exploration', 'rich', 'nonlinear', 'given', 'imaging', 'protein', 'interactively', 'fractal', 'eda', 'converts', 'techniques', 'experimental', 'primarily', 'inspection', 'threedimensional', 'trace', 'analyses', 'methods', 'arbitrary', 'energy', 'loudspeaker', 'gnumeric', 'analyzing', 'related', 'medical']
+
+[design]
+name = 'Art & Design'
+icon = 'design.png'
+keywords = ['image', 'images', 'digital', 'photo', 'tiff', 'rotate', 'png', 'painting', 'hdr', 'animation', 'jpeg', 'vector', 'metadata', 'shapes', 'svg', 'gthumb', 'hugin', 'comic', 'slideshow', 'rgb', 'lines', 'gif', 'crop', 'rawtherapee', 'krita', 'animations', 'path', 'djvu', 'bmp', 'manipulate', 'exif', 'stl', 'bitmap', 'dxf', 'gimp', 'artists', 'obj', 'thumbnail', 'thumbnails', 'palette', 'load', 'raster', 'gcode', 'charts', 'modelling', 'scanner', 'paint', 'picker', 'dcraw', 'solution', 'mesh', 'textures', 'bits', 'filters', 'apply', 'icc', 'brushes', 'poster', 'solid', 'form', 'argyll', 'cms', 'openscad', 'producing', 'embedded', 'transformations', 'comics', '16', 'blender', 'furniture', 'tiled', 'switching', 'tone', 'stitch', 'saving', 'parametric', 'fit', '32', 'pixel', 'layers']
+
+[media]
+name = 'Photo & Video'
+icon = 'media.png'
+keywords = ['video', 'media', 'videos', 'mpv', 'subtitles', 'o', 'subtitle', 'codecs', 'playlist', 'ffmpeg', 'dvds', 'mplayer', 'youtube', 'webcam', 'movies', 'decoding', 'chapter', 'syncplay', 'shotwell', 'convert', 'digikam', 'frame', 'tv', 'television', 'multimedia', 'downloader', 'timeline', 'entangle', 'celluloid', 'mpris2', 'plays', 'streams', 'libmpv', 'animated', 'watch', 'burn', 'interpolation', 'freedom', 'rapid', 'rename', 'scene', 'location', 'bar', 'converseen', 'bunch', '100', 'transitions', 'cheese', 'virtually', 'dvd', 'avi', 'qtqml', 'overlays', 'skip', 'scaling', 'timing', 'parole', 'jellyfin', 'flickr', 'gives', 'recommended', 'xmp', 'contrast', 'andor', 'enhance', 'optimized', 'position', 'love', 'apis', 'dedicated', 'onthefly', 'movie', 'alpha', 'watching', 'vlc', 'smplayer', 'tuner', 'dvb', 'ser', 'runtime', 'ready']
+
+[system]
+name = 'System'
+icon = 'system.png'
+keywords = ['font', 'settings', 'configure', 'ubuntu', 'packages', 'fonts', 'xfce', 'typeface', 'method', 'family', '35', 'base', 'postscript', 'alternative', 'dolphin', 'driver', 'remove', 'updates', 'cpu', 'update', 'apps', 'installed', 'specification', 'status', 'processes', 'disks', 'firewall', 'freely', 'center', 'partitions', 'monitoring', 'urw', 'chinese', 'battery', 'adjust', 'overview', 'company', 'utilized', 'ghostscript', 'ups', 'nut', 'upgrade', 'module', 'lxde', 'icons', 'tree', 'detailed', 'existing', 'resources', 'dependencies', 'login', 'drives', 'freedesktoporg', 'storage', 'distribution', 'sensor', 'kylin', 'calibration', 'serif', 'itc', 'brightness', 'queues', 'monitors', 'thunar', 'changes', 'originally', 'layouts', 'drive', 'date', 'controlling', 'userfriendly', 'setup']

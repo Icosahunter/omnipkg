@@ -10,7 +10,7 @@ def installed(args):
     print(format_results(omnipkg.run('installed', **vars(args))))
 
 def updatable(args):
-    print(format_results(omnipkg.run('updatable', **vars(args))))
+    print(format_results(omnipkg.run('updates', **vars(args))))
 
 def install(args):
     print(omnipkg.run('install', **vars(args)))
@@ -50,7 +50,7 @@ subparsers = parser.add_subparsers()
 omnipkg = Omnipkg()
 parser.set_defaults(func=parser.print_help)
 
-search_parser = subparsers.add_parser('search', aliases=['sr'])
+search_parser = subparsers.add_parser('search', aliases=['sr', 'find'])
 search_parser.add_argument('package')
 search_parser.add_argument('--pm')
 search_parser.set_defaults(func=search)
@@ -60,30 +60,30 @@ install_parser.add_argument('package')
 install_parser.add_argument('--pm')
 install_parser.set_defaults(func=install)
 
-uninstall_parser = subparsers.add_parser('uninstall', aliases=['ut'])
+uninstall_parser = subparsers.add_parser('uninstall', aliases=['ut', 'remove', 'rm'])
 uninstall_parser.add_argument('package')
 uninstall_parser.add_argument('--pm')
 uninstall_parser.set_defaults(func=uninstall)
 
-update_parser = subparsers.add_parser('update', aliases=['up'])
+update_parser = subparsers.add_parser('update', aliases=['up', 'upgrade'])
 update_parser.add_argument('package')
 update_parser.add_argument('--pm')
 update_parser.set_defaults(func=update)
 
-update_all_parser = subparsers.add_parser('update-all', aliases=['ua'])
+update_all_parser = subparsers.add_parser('update-all', aliases=['ua', 'upgrade-all'])
 update_all_parser.add_argument('--pm')
 update_all_parser.set_defaults(func=update_all)
 
-info_parser = subparsers.add_parser('info', aliases=['if'])
+info_parser = subparsers.add_parser('info', aliases=['if', 'show'])
 info_parser.add_argument('package')
 info_parser.add_argument('--pm')
 info_parser.set_defaults(func=info)
 
-installed_parser = subparsers.add_parser('installed', aliases=['li'])
+installed_parser = subparsers.add_parser('installed', aliases=['li', 'list'])
 installed_parser.add_argument('--pm')
 installed_parser.set_defaults(func=installed)
 
-updatable_parser = subparsers.add_parser('updatable', aliases=['lu'])
+updatable_parser = subparsers.add_parser('updates', aliases=['lu'])
 updatable_parser.add_argument('--pm')
 updatable_parser.set_defaults(func=updatable)
 

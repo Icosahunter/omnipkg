@@ -12,8 +12,8 @@ class PackageManager():
         self.privileged_commands = [ 'install', 'uninstall', 'update', 'update_all' ]
         self.rev_dns = pm_def.get('rev_dns', None)
         self.name = pm_def['name']
-        for x in pm_def['commands']:
-            self._add_command(x)
+        for name, data in pm_def['commands'].items():
+            self._add_command(name, data)
         self.installed_pkgs = None
         self.updatable_pkgs = None
         self.omnipkg = omnipkg_instance
@@ -21,18 +21,18 @@ class PackageManager():
     def __str__(self):
         return self.name
 
-    def _add_command(self, data):
-        privileged = data.get('privileged', data['name'] in self.privileged_commands)
-        self.commands[data['name']] = Command(cmd=data['command'], parser=data.get('parser', None), skip_lines=data.get('skip_lines', 0), privileged=privileged)
+    def _add_command(self, name, data):
+        privileged = data.get('privileged', name in self.privileged_commands)
+        self.commands[name] = Command(cmd=data['command'], parser=data.get('parser', None), skip_lines=data.get('skip_lines', 0), privileged=privileged)
         #if not self.hasattr(name):
         #    self.setattr(name, self.commands[name])
 
     def index_packages(self):
-        for query in string.ascii_letters + string.digits:
+        for query in 'abcdefghijklmnopqrstuvwxyz0123456789':
             for package in self.run('search', query):
-                package._fill_missing_info()
+                package.populate()
         for package in self.run('installed'):
-            package._fill_missing_info()
+            package.populate()
 
     def package_installed(self, id):
         if self.installed_pkgs == None:
@@ -41,13 +41,13 @@ class PackageManager():
 
     def package_updatable(self, id):
         if self.updatable_pkgs == None:
-            self.updatable_pkgs = [x['id'] for x in self.commands['updatable']()]
+            self.updatable_pkgs = [x['id'] for x in self.commands['updates']()]
         return id in self.updatable_pkgs
 
     def package_exists(self, id):
         return id in [x.id for x in self.commands['search'](id=id)]
 
-    def run(self, cmd, package):
+    def run(self, cmd, package=None):
         if cmd in ['install', 'uninstall']:
             self.installed_pkgs = None
         if cmd in ['install', 'uninstall', 'update', 'update-all']:

@@ -1,37 +1,29 @@
 name = "snap"
 
-[[commands]]
-name = "search"
+[commands.search]
 command = "snap find {id}"
 parser = "{id}{:s}{:S}{:s}{:S}{:s}{:S}{:s}{summary}\n"
 
-[[commands]]
-name = "install"
+[commands.install]
 command = "snap install {id}"
 
-[[commands]]
-name = "uninstall"
+[commands.uninstall]
 command = "snap remove {id}"
 
-[[commands]]
-name = "update"
+[commands.update]
 command = "snap refresh {id}"
 
-[[commands]]
-name = "update-all"
+[commands.update-all]
 command = "snap refresh"
 
-[[commands]]
-name = "installed"
+[commands.installed]
 command = "snap list"
 parser = "{id} {summary}\n"
 
-[[commands]]
-name = "updatable"
+[commands.updates]
 command = "snap refresh --list"
 parser = "{id} {summary}\n"
 
-[[commands]]
-name = "info"
+[commands.info]
 command = "snap info --verbose {id}"
 parser = "{}name:{:s}{id}\nsummary:{:s}{summary}\n{}{:s}- {website:S}\nlicense:{}description: |\n{description}notes:{}"

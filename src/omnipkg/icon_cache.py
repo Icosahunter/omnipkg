@@ -1,7 +1,7 @@
 from pathlib import Path
 import requests
 import hashlib
-
+import shutil
 
 class IconCache:
     def __init__(self, dir):

@@ -1,0 +1,5 @@
+requests_timeout = 0.5
+filter_search = true
+search_results_limit = 20
+columns = ['icon', 'name', 'id', 'pm', 'summary']
+prefetch = false

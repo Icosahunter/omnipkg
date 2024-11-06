@@ -1,42 +1,34 @@
 "name" = "brew"
 
-[[commands]]
-name = "search"
+[commands.search]
 command = "brew desc -s --eval-all {id}"
 parser = "{id}: {summary}\n"
 skip_lines = 1
 
-[[commands]]
-name = "install"
+[commands.install]
 command = "brew install {id}"
 privileged = false
 
-[[commands]]
-name = "uninstall"
+[commands.uninstall]
 command = "brew uninstall {id}"
 privileged = false
 
-[[commands]]
-name = "update"
+[commands.update]
 command = "brew upgrade {id}"
 privileged = false
 
-[[commands]]
-name = "update-all"
+[commands.update-all]
 command = "brew upgrade"
 privileged = false
 
-[[commands]]
-name = "installed"
+[commands.installed]
 command = "brew list"
 parser = "{id}\n"
 
-[[commands]]
-name = "updatable"
+[commands.updates]
 command = "brew outdated -q"
 parser = "{id}\n"
 
-[[commands]]
-name = "info"
+[commands.info]
 command = "brew info --json  {id}"
 parser = "{}\"name\": \"{id}\"{}\"tap\": \"{remote}\"{}\"desc\": \"{summary}\"{}\"homepage\": \"{website}\"{}"

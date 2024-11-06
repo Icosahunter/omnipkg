@@ -3,9 +3,12 @@ import omnipkg.dirs as dirs
 from PySide6.QtWidgets import QMainWindow, QTableWidgetItem
 from PySide6.QtCore import Signal, QThreadPool, QRunnable, QObject
 from PySide6.QtGui import QIcon
+from PySide6.QtAsyncio import asyncio
+import subprocess
 import json
 import glob
 import os
+import sys
 
 class MainWindow(QMainWindow):
     def __init__(self, omnipkg):
@@ -22,33 +25,32 @@ class MainWindow(QMainWindow):
         self.ui.updateAllButton.clicked.connect(self.update_all_click)
         self.ui.clearPackageIndexesAction.triggered.connect(self.omnipkg.pkg_cache.clear)
         self.ui.clearIconCacheAction.triggered.connect(self.omnipkg.icon_cache.clear)
-        self.ui.indexPackagesAction.triggered.connect(self.index_packages)
+        self.ui.openConfigAction.triggered.connect(self.open_config)
+        self.ui.resetConfigAction.triggered.connect(self.omnipkg.reset_all_config)
         self.package_list = []
         self.selected_package = None
         self.action_queue = []
-        self.load_package_details_template()
+        self.item_update_queue = []
         self.setWindowIcon(QIcon(str(dirs.installed_dir / 'data/appfiles/omnipkg.png')))
 
-    def update_all_click():
-        self.run_action('update-all')
+    def open_config(self):
+        if sys.platform == 'win32':
+            subprocess.run(['start', dirs.config_dir])
+        elif sys.platform == 'darwin':
+            subprocess.run(['open', dirs.config_dir])
+        elif sys.platform == 'linux':
+            subprocess.run(['xdg-open', dirs.config_dir])
 
-    def load_package_details_template(self):
-        details_template_path = dirs.installed_dir / 'data/package-details-template.md'
-        if (dirs.config_dir / '/package-details-template.md').exists():
-            details_template_path = dirs.config_dir / 'data/package-details-template.md'
-        with open(details_template_path, 'r') as f:
-            self.package_details_template = f.read()
+    def update_all_click(self):
+        self.run_action('update-all')
 
     def search_combo_changed(self, option):
         if option == 'All':
             self.run_action('search', self.ui.searchLineEdit.text())
         elif option == 'Updates':
-            self.run_action('updatable')
+            self.run_action('updates')
         elif option == 'Installed':
             self.run_action('installed')
-    
-    def index_packages(self):
-        self.omnipkg.index_packages()
 
     def install_click(self):
         self.run_action('install', self.selected_package['id'], self.selected_package['pm'])
@@ -63,16 +65,16 @@ class MainWindow(QMainWindow):
         if self.ui.searchComboBox.currentText() == 'All':
             self.run_action('search', self.ui.searchLineEdit.text())
         elif self.ui.searchComboBox.currentText() == 'Updates':
-            self.run_action('updatable')
+            self.run_action('updates')
             self.filter_package_list(self.ui.searchLineEdit.text())
         elif self.ui.searchComboBox.currentText() == 'Installed':
             self.run_action('installed')
             self.filter_package_list(self.ui.searchLineEdit.text())
-    
+
     def filter_package_list(self, query):
         self.package_list = [x for x in self.package_list if query in json.dumps(x, default=str)]
         self.update_table()
-    
+
     def set_package_list(self, packages):
         self.package_list = packages
         self.update_table()
@@ -84,18 +86,41 @@ class MainWindow(QMainWindow):
         for i in range(len(self.package_list)):
             for j in range(len(self.omnipkg.config['columns'])):
                 item = QTableWidgetItem()
-                if self.omnipkg.config['columns'][j] == 'icon':
-                    icon = self.package_list[i][self.omnipkg.config['columns'][j]]
-                    if icon is not None:
-                        item.setIcon(QIcon(str(icon)))
-                else:
-                    text = str(self.package_list[i][self.omnipkg.config['columns'][j]])
-                    item.setText(text)
                 self.ui.packageListTable.setItem(i, j, item)
-    
+                col = self.omnipkg.config['columns'][j]
+                if col in self.package_list[i].data or col == 'name':
+                    self.set_item(item, col, self.package_list[i][col])
+                else:
+                    self.queue_item_update(item, col, self.package_list[i])
+            self.package_list[i].save()
+        self.start_item_updates()
+
+    def start_item_updates(self):
+        QThreadPool.globalInstance().start(self.item_update_queue.pop(0))
+
+    def queue_item_update(self, item, field, pkg):
+        item_update_task = Task(self.item_update_do_work, item=item, pkg=pkg, field=field)
+        item_update_task.taskComplete.connect(self.item_update_complete)
+        self.item_update_queue.append(item_update_task)
+
+    def item_update_do_work(self, item, pkg, field):
+        return item, field, pkg[field]
+
+    def item_update_complete(self, result):
+        self.set_item(*result)
+        if len(self.item_update_queue) > 0:
+            QThreadPool.globalInstance().start(self.item_update_queue.pop(0))
+
+    def set_item(self, item, field, value):
+        if field == 'icon':
+            if value is not None:
+                item.setIcon(QIcon(str(value)))
+        else:
+            item.setText(str(value))
+
     def update_details(self):
         if self.selected_package is not None:
-            formatted_details = self.package_details_template.format_map(self.selected_package)
+            formatted_details = self.omnipkg.package_details_template.format_map(self.selected_package)
             self.ui.packageDetailsTextBrowser.setMarkdown(formatted_details)
 
             if self.selected_package['installed']:
@@ -113,7 +138,7 @@ class MainWindow(QMainWindow):
     def package_click(self, row, col):
         self.selected_package = self.package_list[row]
         self.update_details()
-    
+
     def action_complete(self):
         self.ui.statusbar.clearMessage()
         self.action_queue.pop()
@@ -126,7 +151,7 @@ class MainWindow(QMainWindow):
         self.action_queue.append(omni_action)
         if len(self.action_queue) == 1:
             self.start_action_task(omni_action)
-    
+
     def start_action_task(self, omni_action):
 
         text = omni_action.kwargs['command'] + 'ing'
@@ -139,9 +164,9 @@ class MainWindow(QMainWindow):
         self.ui.statusbar.showMessage(text)
         omni_action.taskComplete.connect(self.action_complete)
 
-        if omni_action.kwargs['command'] in ['search', 'updatable', 'installed']:
+        if omni_action.kwargs['command'] in ['search', 'updates', 'installed']:
             omni_action.taskComplete.connect(self.set_package_list)
-        
+
         QThreadPool.globalInstance().start(omni_action)
 
 class TaskSignals(QObject):
