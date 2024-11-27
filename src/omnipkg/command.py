@@ -31,10 +31,9 @@ class Command:
         print(cmd)
         result = subprocess.run(shlex.split(cmd), capture_output=capture_output).stdout
         if result is not None:
-            result = result.decode('utf-8')
+            return self._parse(result.decode('utf-8'))
         else:
-            result = ''
-        return self._parse(result)
+            return []
 
     def _parse(self, text):
 

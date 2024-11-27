@@ -172,7 +172,7 @@ class Package():
     def _get_icon_from_github_page(self, repo_url):
         url_path = urlsplit(repo_url).path
         # name_keywords = '|'.join(self.data['name'].lower().split(' '))
-        url_regex = r'(?:\"|\'|\()(\S*\.\S*)(?:\"|\'|\()'
+        url_regex = r'(?:\"|\'|\()(\S*\.\S*)(?:\"|\'|\))'
         extensions = ['png', 'jpg', 'jpeg', 'ico']
         positive_keywords = [*self.data['name'].lower().split(), 'icon', 'logo']
         negative_keywords = ['shields', 'backer', 'badge', 'indicator', 'status', 'build', 'screenshot', 'coverage', 'circleci', 'travis-ci']
