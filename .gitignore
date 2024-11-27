@@ -4,6 +4,5 @@ src/omnipkg.egg-info
 *.pyc
 ui_*.py
 venv
-.mypy_cache
 .ropeproject
 .vscode
