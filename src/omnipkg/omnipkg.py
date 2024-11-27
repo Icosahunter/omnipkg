@@ -57,7 +57,7 @@ class Omnipkg:
         for path in dirs.pm_defs_dir.glob('*.toml'):
             with open(path, 'rb') as f:
                 pm_def = tomllib.load(f)
-                if shutil.which(pm_def['name']):
+                if shutil.which(pm_def['name']) and pm_def['name'] in self.config['package_managers']:
                     self.pms[pm_def['name']] = (PackageManager(pm_def, self))
 
     def reset_pm_defs(self):

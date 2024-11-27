@@ -2,7 +2,7 @@ name = "snap"
 
 [commands.search]
 command = "snap find {id}"
-parser = "{id}{:s}{:S}{:s}{:S}{:s}{:S}{:s}{summary}\n"
+parser = "(?m)^(?!Name )(?P<id>\\S*) *\\S* *\\S* *\\S* *(?P<summary>.*)\n"
 
 [commands.install]
 command = "snap install {id}"
@@ -18,12 +18,12 @@ command = "snap refresh"
 
 [commands.installed]
 command = "snap list"
-parser = "{id} {summary}\n"
+parser = "(?P<id>\\S*) (?P<summary>\\S*)\n"
 
 [commands.updates]
 command = "snap refresh --list"
-parser = "{id} {summary}\n"
+parser = "(?P<id>\\S*) (?P<summary>\\S*)\n"
 
 [commands.info]
 command = "snap info --verbose {id}"
-parser = "{}name:{:s}{id}\nsummary:{:s}{summary}\n{}{:s}- {website:S}\nlicense:{}description: |\n{description}notes:{}"
+parser = "[\\s\\S]*name:\\s*(?P<id>\\S*)\nsummary:\\s*(?P<summary>.*)\n[\\s\\S]*\\s*- (?P<website>\\S*)\nlicense:[\\s\\S]*description: \\|\n(?P<description>[\\s\\S]*)notes:.*"

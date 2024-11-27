@@ -1,22 +1,19 @@
 import shlex
 import subprocess
 import platform
-import threading
-from parse import parse
+import re
 import string
+
+provides_re = re.compile('\\(\\?P\\<(\\w*)\\>')
 
 class Command:
     def __init__(self, cmd, parser=None, privileged=False, skip_lines=0):
         self.command = cmd
-        self.parser = parser
+        self.parser = re.compile(parser) if parser else None
         self.privileged = privileged
         self.requires = [x[1] for x in string.Formatter().parse(cmd) if not x[1] in [None, '']]
         self.skip_lines = skip_lines
-        if parser is not None:
-            self.provides = [x[1] for x in string.Formatter().parse(parser) if not x[1] in [None, '']]
-        else:
-            self.provides = []
-        #self.thread
+        self.provides = provides_re.findall(parser) if parser else []
 
     def __str__(self):
         return self.command
@@ -40,23 +37,10 @@ class Command:
         return self._parse(result)
 
     def _parse(self, text):
-        result = []
-        i = 0
+
         if self.skip_lines > 0:
-            _text = '\n'.join(text.split('\n')[self.skip_lines:-1])
+            _text = '\n'.join(text.split('\n')[self.skip_lines:-1]) + '\n'
         else:
             _text = text
-        while len(_text) > 0:
-            parsed = parse(self.parser+'{end}', _text)
-            if parsed is not None:
-                i = parsed.spans['end'][0]
-                _text = _text[i:]
-                result.append(parsed.named)
-                del result[-1]['end']
-            else:
-                parsed = parse(self.parser, _text)
-                if parsed is not None:
-                    result.append(parsed.named)
-                break
 
-        return result
+        return [x.groupdict() for x in self.parser.finditer(_text)]

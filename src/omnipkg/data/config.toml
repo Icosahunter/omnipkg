@@ -3,3 +3,4 @@ filter_search = true
 search_results_limit = 20
 columns = ['icon', 'name', 'id', 'pm', 'summary']
 prefetch = false
+package_managers = ["brew", "eopkg", "flatpak", "pacman", "snap"]

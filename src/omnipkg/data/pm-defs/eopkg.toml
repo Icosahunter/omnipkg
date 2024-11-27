@@ -3,7 +3,7 @@ origin-prefix = "solus"
 
 [commands.search]
 command = "eopkg sr -N {id}"
-parser = "{id} {}- {summary}\n"
+parser = "(?P<id>\\S*) *- (?P<summary>.*)\n"
 
 [commands.install]
 command = "eopkg it -y -r {remote} {id}"
@@ -19,12 +19,12 @@ command = "eopkg up"
 
 [commands.installed]
 command = "eopkg li -N"
-parser = "{id} {}- {summary}\n"
+parser = "(?P<id>\\S*) *- (?P<summary>.*)\n"
 
 [commands.updates]
 command = "eopkg lu -N"
-parser = "{id} {}- {summary}\n"
+parser = "(?P<id>\\S*) *- (?P<summary>.*)\n"
 
 [commands.info]
 command = "eopkg info -N --xml {id}"
-parser = "{}<Name>{id}</Name>{}<Summary xml:lang=\"en\">{summary}</Summary>{}<Description xml:lang=\"en\">{description}</Description>{}<Homepage>{website}</Homepage>{}"
+parser = "(?s).*<Name>(?P<id>[^<>]*)</Name>.*<Summary xml:lang=\"en\">(?P<summary>[^<>]*)</Summary>.*<Description xml:lang=\"en\">(?P<description>[^<>]*)</Description>.*<Homepage>(?P<website>[^<>]*)</Homepage>.*"

@@ -1,8 +1,8 @@
 name = "flatpak"
 
 [commands.search]
-command = "flatpak search --columns=name,application,description,remotes {id}"
-parser = "{name}\t{id}\t{summary}\t{remote}\n"
+command = "flatpak search --columns=name,application,description {id}"
+parser = "(?P<name>.*)\\t(?P<id>.*)\\t(?P<summary>.*)\n"
 skip_lines = 1
 
 [commands.install]
@@ -18,16 +18,16 @@ command = "flatpak update {id}"
 command = "flatpak update"
 
 [commands.installed]
-command = "flatpak list --columns=name,application,description,remotes"
-parser = "{name}\t{id}\t{summary}\t{remote}\n"
+command = "flatpak list --columns=name,application,description"
+parser = "(?P<name>.*)\\t(?P<id>.*)\\t(?P<summary>.*)\n"
 skip_lines = 1
 
 [commands.updates]
-command = "flatpak remote-ls --updates --columns=name,application,description,remotes"
-parser = "{name}\t{id}\t{summary}\t{remote}\n"
+command = "flatpak remote-ls --updates --columns=name,application,description"
+parser = "(?P<name>.*)\\t(?P<id>.*)\\t(?P<summary>.*)\n"
 skip_lines = 1
 
 [commands.info]
-command = "flatpak search --columns=name,application,description,remotes {id}"
-parser = "{name}\t{id}\t{summary}\t{remote}\n"
+command = "flatpak search --columns=name,application,description {id}"
+parser = "(?P<name>.*)\\t(?P<id>.*)\\t(?P<summary>.*)\n"
 skip_lines = 1

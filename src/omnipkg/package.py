@@ -171,28 +171,32 @@ class Package():
 
     def _get_icon_from_github_page(self, repo_url):
         url_path = urlsplit(repo_url).path
-        #name_keywords = '|'.join(self.data['name'].lower().split(' '))
+        # name_keywords = '|'.join(self.data['name'].lower().split(' '))
         url_regex = r'(?:\"|\'|\()(\S*\.\S*)(?:\"|\'|\()'
+        extensions = ['png', 'jpg', 'jpeg', 'ico']
         positive_keywords = [*self.data['name'].lower().split(), 'icon', 'logo']
         negative_keywords = ['shields', 'backer', 'badge', 'indicator', 'status', 'build', 'screenshot', 'coverage', 'circleci', 'travis-ci']
 
-        #readme_re = f'(?:\\"|\'|\\()((?!.*(shields|backer|badge|indicator|status|build|screenshot|coverage|circleci|travis-ci).*)(\\w|[/\\.:-~])*/\\S*(icon|logo|{name_keywords})\\S*\\.(png|jpg|svg|ico))'
+        # readme_re = f'(?:\\"|\'|\\()((?!.*(shields|backer|badge|indicator|status|build|screenshot|coverage|circleci|travis-ci).*)(\\w|[/\\.:-~])*/\\S*(icon|logo|{name_keywords})\\S*\\.(png|jpg|svg|ico))'
         try:
             for branch in ['master', 'main']:
                 readme_url = f'https://github.com{url_path}/raw/{branch}/README.md'
                 response = requests.get(readme_url, allow_redirects=True, timeout=self.data['pm'].omnipkg.config['requests_timeout'])
+
                 if response.status_code < 400:
-                    icon_url = re.compile(readme_re, re.IGNORECASE).search(response.text).group(1)
-                    icon_url = self._fix_relative_url(f'https://github.com{url_path}/raw/{branch}/', icon_url)
-                    return icon_url
+                    urls = re.compile(url_regex, re.IGNORECASE).findall(response.text)
+                    for url in urls:
+                        if any(x in url for x in positive_keywords) and not any(x in url for x in negative_keywords) and any(url.endswith(x) for x in extensions):
+                            url = self._fix_relative_url(f'https://github.com{url_path}/raw/{branch}/', url)
+                            return url
         except:
             return None
 
-        #html = requests.get(self.data['website'], allow_redirects=True).text
-        #tree = etree.fromstring(html, etree.HTMLParser())
-        #with open('./test.html', 'w+') as f:
-        #    f.write(html)
-        #icon_url = tree.xpath('//*[@id="repo-title-component"]')[0]
+        # html = requests.get(self.data['website'], allow_redirects=True).text
+        # tree = etree.fromstring(html, etree.HTMLParser())
+        # with open('./test.html', 'w+') as f:
+        #     f.write(html)
+        # icon_url = tree.xpath('//*[@id="repo-title-component"]')[0]
 
     def _id_to_website(self):
         if self._id_is_rev_dns():
@@ -202,7 +206,7 @@ class Package():
             while not self._url_is_valid(url) and len(spliturl) > 2:
                 spliturl.pop(0)
                 url = 'https://' + '.'.join(spliturl)
-            if self._url_is_valid(url):
+            if self._url_is_valid(url) and url != 'https://github.io':
                 print(url)
                 self.data['website'] = self._get_redirected_website(url)
 

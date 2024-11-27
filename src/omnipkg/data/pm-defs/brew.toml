@@ -2,7 +2,7 @@
 
 [commands.search]
 command = "brew desc -s --eval-all {id}"
-parser = "{id}: {summary}\n"
+parser = "(?P<id>.*): (?P<summary>.*)\n"
 skip_lines = 1
 
 [commands.install]
@@ -23,12 +23,12 @@ privileged = false
 
 [commands.installed]
 command = "brew list"
-parser = "{id}\n"
+parser = "(?P<id>.*)\n"
 
 [commands.updates]
 command = "brew outdated -q"
-parser = "{id}\n"
+parser = "(?P<id>.*)\n"
 
 [commands.info]
-command = "brew info --json  {id}"
-parser = "{}\"name\": \"{id}\"{}\"tap\": \"{remote}\"{}\"desc\": \"{summary}\"{}\"homepage\": \"{website}\"{}"
+command = "brew info --json {id}"
+parser = "(?s).*\"name\": \"(?P<id>[^\"]*)\".*\"desc\": \"(?P<description>[^\"]*)\".*\"homepage\": \"(?P<website>[^\"]*)\".*"
